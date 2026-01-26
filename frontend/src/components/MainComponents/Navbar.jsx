@@ -6,7 +6,7 @@ import { useAuth } from '../../hooks/auth/useAuth';
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const { authUser } = useAuth()
+    const { user } = useAuth()
 
     const navLinkClass = ({ isActive }) =>
         `text-sm sm:text-base font-medium transition-colors
@@ -45,12 +45,19 @@ const Navbar = () => {
                         Log In
                     </button> */}
                     {
-                        authUser ? (
+                        !user ? (
                             <button
                                 onClick={() => navigate('/signup')}
                                 className="flex-1 rounded-lg bg-blue-600 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700"
                             >
                                 Sign Up
+                            </button>
+                        ) : user.role === "admin" ? (
+                            <button
+                                onClick={() => navigate('/admin')}
+                                className="flex-1 rounded-lg bg-blue-600 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                            >
+                                Go To Dashboard
                             </button>
                         ) : (
                             <button

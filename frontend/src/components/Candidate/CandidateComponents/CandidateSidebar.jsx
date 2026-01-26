@@ -1,23 +1,34 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  User, 
-  ScrollText, 
-  Send, 
+import {
+  LayoutDashboard,
+  User,
+  ScrollText,
+  Send,
   SearchCheck,
   Settings,
   LogOut,
   UserCircle
 } from "lucide-react";
+import { useAuth } from "../../../hooks/auth/useAuth";
+
 
 const CandidateSidebar = () => {
+  const { logoutMutation } = useAuth();
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
-      isActive
-        ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-        : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
+    `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${isActive
+      ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+      : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
     }`;
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      navigate("/login", { replace: true });
+    } catch {
+      // error toast already handled in hook
+    }
+  };
 
   return (
     <aside className="flex flex-col h-screen w-72 bg-white border-r border-zinc-200">
@@ -34,12 +45,12 @@ const CandidateSidebar = () => {
           <LayoutDashboard size={20} />
           Dashboard
         </NavLink>
-        
+
         <NavLink to="/candidate/profile" className={linkClass}>
           <User size={20} />
           Profile
         </NavLink>
-        
+
         <NavLink to="/candidate/manifesto" className={linkClass}>
           <ScrollText size={20} />
           Manifesto
@@ -62,7 +73,7 @@ const CandidateSidebar = () => {
           <Settings size={20} />
           Settings
         </button> */}
-        
+
         <div className="mt-4 p-3 bg-zinc-50 rounded-2xl flex items-center gap-3 border border-zinc-100">
           <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
             <UserCircle size={24} />
@@ -71,7 +82,9 @@ const CandidateSidebar = () => {
             <p className="text-sm font-bold text-zinc-900 truncate">Rajesh Kumar</p>
             <p className="text-xs text-zinc-500 truncate">Candidate Account</p>
           </div>
-          <button title="Logout" className="text-zinc-400 hover:text-red-500 transition-colors">
+          <button title="Logout"
+            disabled={logoutMutation.isPending}
+            onClick={handleLogout} className="text-zinc-400 hover:text-red-500 transition-colors cursor-pointer" >
             <LogOut size={18} />
           </button>
         </div>

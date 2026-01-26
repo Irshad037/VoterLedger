@@ -21,15 +21,27 @@ import SignupPage from "../components/Auth/SignupPage";
 import LoginPage from "../components/Auth/LoginPage";
 
 
+import AdminRoute from "../components/Auth/AdminRoute";
+import CandidateRoute from "../components/Auth/CandidateRoute";
+import AuthRedirectRoute from "../components/Auth/AuthRedirectRoute";
+
 
 export const routes = [
   {
-    path: "/signup",
-    element: < SignupPage/>,
+    path: "/login",
+    element: (
+      <AuthRedirectRoute>
+        <LoginPage />
+      </AuthRedirectRoute>
+    ),
   },
   {
-    path: "/login",
-    element: < LoginPage/>,
+    path: "/signup",
+    element: (
+      <AuthRedirectRoute>
+        <SignupPage />
+      </AuthRedirectRoute>
+    ),
   },
   {
     path: "/",
@@ -55,18 +67,27 @@ export const routes = [
   // ADMIN ROUTES
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "elections", element: <ElectionsPage /> },
-      {path: "elections/:electionId/applications", element: <CandidateApplications /> },
+      { path: "elections/:electionId/applications", element: <CandidateApplications /> },
       { path: "reports", element: <ReportsLogs /> },
     ],
   },
+
   // Candidate ROUTES
   {
     path: "/candidate",
-    element: <CandidateLayout />,
+    element: (
+      <CandidateRoute>
+        <CandidateLayout />
+      </CandidateRoute>
+    ),
     children: [
       { index: true, element: <CandidateDashboard /> },
       { path: "profile", element: <CandidateProfile /> },
@@ -75,4 +96,5 @@ export const routes = [
       { path: "status", element: <ApplicationStatus /> },
     ],
   },
+
 ];

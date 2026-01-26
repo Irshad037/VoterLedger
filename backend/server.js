@@ -4,6 +4,7 @@ import 'dotenv/config'
 import cookieParser from 'cookie-parser';
 import connectMongoDB from './src/config/mongodb.js';
 import authRoutes from './src/routes/auth.route.js';
+import bcrypt from "bcryptjs";
 
 const app = express();
 
@@ -34,6 +35,7 @@ async function startServer() {
         app.listen(PORT, () => {
             console.log(`🚀 Server running on http://localhost:${PORT}`);
         });
+
     } catch (error) {
         console.error('❌ Failed to start server:', error.message);
         process.exit(1);
