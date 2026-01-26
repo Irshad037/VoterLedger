@@ -1,31 +1,32 @@
 import React, { useState } from "react";
-import { 
-  Mail, 
-  Lock, 
-  ArrowRight, 
-  Eye, 
-  EyeOff, 
-  ShieldCheck, 
-  LogIn 
+import {
+    Mail,
+    Lock,
+    ArrowRight,
+    Eye,
+    EyeOff,
+    ShieldCheck,
+    LogIn
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoLaw } from "react-icons/go";
+import { useAuth } from "../../hooks/auth/useAuth";
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const { loginMutation } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [credentials, setCredentials] = useState({ email: "", password: "" });
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // Add your authentication logic here
-        console.log("Logging in with:", credentials);
-        navigate("/candidate"); // Redirect to dashboard after login
+        await loginMutation.mutateAsync(credentials);
+        navigate("/"); // Redirect to dashboard after login
     };
 
     return (
         <div className="min-h-screen bg-[#FDFDFE] flex flex-col justify-center py-12 px-6 lg:px-8 relative overflow-hidden">
-            
+
             {/* Branding Header */}
             <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
                 <div className="inline-flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-blue-600 text-white shadow-xl shadow-blue-200 mb-8">
@@ -44,7 +45,7 @@ const LoginPage = () => {
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[440px] relative z-10">
                 <div className="bg-white/80 backdrop-blur-xl py-12 px-10 shadow-md rounded-[2.5rem] border-2 border-zinc-200">
-                    
+
                     <form className="space-y-6" onSubmit={handleLogin}>
                         {/* Email Input */}
                         <div className="space-y-2">
@@ -92,24 +93,15 @@ const LoginPage = () => {
                             </div>
                         </div>
 
-                        {/* Remember Me Toggle (Optional) */}
-                        <div className="flex items-center px-1">
-                            <input
-                                id="remember-me"
-                                type="checkbox"
-                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-zinc-300 rounded cursor-pointer"
-                            />
-                            <label htmlFor="remember-me" className="ml-2 block text-xs font-bold text-zinc-500 cursor-pointer">
-                                Keep me signed in
-                            </label>
-                        </div>
 
                         {/* Sign In Button */}
                         <button
                             type="submit"
+                            disabled={loginMutation.isPending}
                             className="group w-full flex items-center justify-center gap-3 bg-zinc-900 hover:bg-blue-600 text-white px-6 py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all shadow-xl hover:shadow-blue-200 active:scale-[0.98] mt-8"
                         >
-                            Sign In <LogIn size={18} className="group-hover:translate-x-1 transition-transform" />
+                            {loginMutation.isPending ? "Sign... "
+                                : "Sign In"}<LogIn size={18} className="group-hover:translate-x-1 transition-transform" />
                         </button>
                     </form>
 

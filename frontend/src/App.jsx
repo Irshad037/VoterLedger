@@ -5,6 +5,8 @@ import { routes } from "./utils/AppRoutes";
 import Navbar from "./components/MainComponents/Navbar";
 import ScrollToTop from "./components/MainComponents/ScrollToTop";
 import Footer from "./components/MainComponents/Footer";
+import { Toaster } from "react-hot-toast";
+
 
 const App = () => {
   const routing = useRoutes(routes);
@@ -13,6 +15,7 @@ const App = () => {
 
   return (
     <>
+      <Toaster />
       <ScrollToTop />
       {!isAdminPath && <Navbar />}
       {routing}

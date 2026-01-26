@@ -1,26 +1,40 @@
 import React, { useState } from "react";
-import { 
-  User, Mail, Lock, ArrowRight, Eye, EyeOff, 
-  AlertCircle, MapPin 
+import {
+    User, Mail, Lock, ArrowRight, Eye, EyeOff,
+    AlertCircle, MapPin
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GoLaw } from "react-icons/go";
+import { useAuth } from "../../hooks/auth/useAuth";
 
 const SignupPage = () => {
+    const { signupMutation } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({ 
-        firstName: "", 
-        lastName: "", 
-        email: "", 
-        password: "" 
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: ""
     });
+
+    const handleSunmit = async (e) => {
+        e.preventDefault()
+        await signupMutation.mutateAsync(formData);
+
+        setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: ""
+        });
+    }
 
     // Calculate progress based on the 4 main fields
     const strength = Object.values(formData).filter(v => v.length > 0).length * 25;
 
     return (
         <div className="min-h-screen bg-[#FDFDFE] flex flex-col justify-center py-12 px-6 lg:px-8 relative overflow-hidden">
-            
+
             <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
                 <div className="inline-flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-blue-600 text-white shadow-xl shadow-blue-200 mb-8 animate-bounce-slow">
                     <GoLaw size={32} />
@@ -47,7 +61,7 @@ const SignupPage = () => {
                         />
                     </div>
 
-                    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-6" onSubmit={handleSunmit}>
                         <div className="grid grid-cols-2 gap-4">
                             <EnhancedInput
                                 label="First Name"
@@ -101,10 +115,12 @@ const SignupPage = () => {
                         </div>
 
                         <button
+                        disabled={signupMutation.isPending}
                             type="submit"
                             className="group w-full flex items-center justify-center gap-3 bg-zinc-900 hover:bg-blue-600 text-white px-6 py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all shadow-xl hover:shadow-blue-200 active:scale-[0.98]"
                         >
-                            Initialize Registry <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                            {signupMutation.isPending ? "Registering... "
+                                : "Initialize Registry"}<ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </button>
                     </form>
 

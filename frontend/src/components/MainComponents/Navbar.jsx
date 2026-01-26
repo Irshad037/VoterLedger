@@ -2,8 +2,11 @@ import React from 'react'
 import { GoLaw } from "react-icons/go";
 import { Search } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from '../../hooks/auth/useAuth';
 
 const Navbar = () => {
+    const navigate = useNavigate();
+    const { authUser } = useAuth()
 
     const navLinkClass = ({ isActive }) =>
         `text-sm sm:text-base font-medium transition-colors
@@ -41,10 +44,24 @@ const Navbar = () => {
                     {/* <button className="text-sm font-medium text-gray-700 hover:text-blue-600">
                         Log In
                     </button> */}
+                    {
+                        authUser ? (
+                            <button
+                                onClick={() => navigate('/signup')}
+                                className="flex-1 rounded-lg bg-blue-600 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                            >
+                                Sign Up
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => navigate('/candidate')}
+                                className="flex-1 rounded-lg bg-blue-600 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                            >
+                                Go To Dashboard
+                            </button>
+                        )
+                    }
 
-                    <button className="flex-1 rounded-lg bg-blue-500 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700">
-                        Sign Up
-                    </button>
                 </div>
             </div>
         </header>
