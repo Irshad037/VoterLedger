@@ -37,6 +37,7 @@ const Navbar = () => {
                     {/* Nav Links */}
                     <div className="hidden md:flex items-center  gap-10 text-sm font-medium">
                         <NavLink to="/elections" className={navLinkClass}>Elections</NavLink>
+                        <NavLink to="/monitor" className={navLinkClass}>Fund</NavLink>
                         <NavLink to="/about" className={navLinkClass}>About</NavLink>
                     </div>
 

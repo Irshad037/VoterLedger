@@ -4,6 +4,10 @@ import ElectionCandidate from "../components/Election/ElectionCandidate";
 import CandidateInfo from "../components/Election/CandidateInfo";
 import FundDashboard from "../components/Election/FundDashboard";
 import Home from "../components/MainComponents/Home";
+import SignupPage from "../components/Auth/SignupPage";
+import LoginPage from "../components/Auth/LoginPage";
+import Monitoring from "../components/MainComponents/Monitoring";
+
 
 import AdminLayout from "../components/Admin/AdminPages/AdminLayout";
 import AdminDashboard from "../components/Admin/AdminPages/AdminDashboard";
@@ -17,14 +21,13 @@ import CandidateProfile from "../components/Candidate/CandidatePage/CandidatePro
 import Manifesto from "../components/Candidate/CandidatePage/Manifesto";
 import AllApplication from "../components/Candidate/CandidatePage/AllApplication";
 import ApplicationStatus from "../components/Candidate/CandidatePage/ApplicationStatus";
-import SignupPage from "../components/Auth/SignupPage";
-import LoginPage from "../components/Auth/LoginPage";
 
 
 import AdminRoute from "../components/Auth/AdminRoute";
 import CandidateRoute from "../components/Auth/CandidateRoute";
 import AuthRedirectRoute from "../components/Auth/AuthRedirectRoute";
 import AboutPage from "../components/MainComponents/AboutPage";
+
 
 
 export const routes = [
@@ -55,6 +58,10 @@ export const routes = [
   {
     path: "/elections",
     element: <DiscoverElections />,
+  },
+  {
+    path: "/monitor",
+    element: <Monitoring />,
   },
   {
     path: "/elections/:electionId/candidate",
