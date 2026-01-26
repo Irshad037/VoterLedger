@@ -8,11 +8,12 @@ import {
     Briefcase,
     Plus,
     Users
-    
+
 } from 'lucide-react';
 import ListCard from '../CandidateComponents/ListCard';
 import FileUploadRow from '../CandidateComponents/FileUploadRow';
 import InputField from '../CandidateComponents/InputField';
+import CriminalCase from '../CandidateComponents/criminalCase';
 
 const CandidateProfile = () => {
     const [profilePhoto, setProfilePhoto] = useState(
@@ -25,8 +26,9 @@ const CandidateProfile = () => {
         email: "",
         phone: "",
         dob: "",
-        party:"",
+        party: "",
     });
+
     const [educationList, setEducationList] = useState([
         {
             id: 1,
@@ -43,30 +45,82 @@ const CandidateProfile = () => {
             duration: "2012 - Present",
         },
     ]);
-    const [affidavits, setAffidavits] = useState([
-        {
-            id: 1,
-            name: "Declaration of Assets",
-            file: null,
-        },
-        {
-            id: 2,
-            name: "Criminal Record Check",
-            file: null,
-        },
-        {
-            id: 3,
-            name: "Statement of Intent",
-            file: null,
-        },
-    ]);
+    const [assets, setAssets] = useState("");
+
+    const [assetBreakdown, setAssetBreakdown] = useState({
+        movable: "₹0",
+        immovable: "₹0",
+        other: "₹0",
+    });
+    // const [affidavits, setAffidavits] = useState([
+    //     {
+    //         id: 1,
+    //         name: "Declaration of Assets",
+    //         file: null,
+    //     },
+    //     {
+    //         id: 3,
+    //         name: "Statement of Intent",
+    //         file: null,
+    //     },
+    // ]);
+    
+    const parseAmount = (v) =>
+        Number(v.replace(/[₹,]/g, "")) || 0;
+
+    const totalAssets =
+        parseAmount(assetBreakdown.movable) +
+        parseAmount(assetBreakdown.immovable) +
+        parseAmount(assetBreakdown.other);
+
+
+    const [hasCriminalCase, setHasCriminalCase] = useState(false);
+    const [criminalCases, setCriminalCases] = useState([]);
+
+    const handleCriminalCaseToggle = (e) => {
+        const checked = e.target.checked;
+        setHasCriminalCase(checked);
+
+        if (!checked) {
+            setCriminalCases([]); // clear cases if unchecked
+        }
+    };
 
     const handleSave = () => {
 
-        const payLoad = {
-            profilePhoto, profileData, educationList, experienceList, affidavits,
-        }
-        console.log(payLoad);
+        const payload = {
+            firstName: profileData.firstName,
+            lastName: profileData.lastName,
+            email: profileData.email,
+            phone: profileData.phone,
+            dob: profileData.dob,
+            party: profileData.party,
+
+            profilePhoto,
+            assets,
+            assetBreakdown,
+
+            education: educationList.map(({ degree, institute, duration }) => ({
+                degree,
+                institute,
+                duration,
+            })),
+
+            experience: experienceList.map(({ role, organization, duration }) => ({
+                role,
+                organization,
+                duration,
+            })),
+
+            // affidavits: affidavits.map(({ name, file }) => ({
+            //     name,
+            //     file,
+            // })),
+
+            criminalCases,
+        };
+
+        console.log(payload);
         // 🔹 CLEAR EVERYTHING (simple way)
         setProfilePhoto("");
         setProfileData({
@@ -75,13 +129,17 @@ const CandidateProfile = () => {
             email: "",
             phone: "",
             dob: "",
-            party:"",
+            party: "",
         });
         setEducationList([]);
         setExperienceList([]);
-        setAffidavits(
-            affidavits.map((a) => ({ ...a, file: null }))
-        );
+        // setAffidavits(
+        //     affidavits.map((a) => ({ ...a, file: null }))
+        // );
+        setAssets("");
+        setAssetBreakdown({ movable: "₹0", immovable: "₹0", other: "₹0" });
+        setHasCriminalCase(false);
+        setCriminalCases([]);
 
     }
 
@@ -331,7 +389,7 @@ const CandidateProfile = () => {
 
 
                 {/* Affidavit Uploads */}
-                <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
+                {/* <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
                     <h2 className="text-lg font-bold text-zinc-900 mb-2">Affidavit Uploads</h2>
                     <p className="text-xs text-zinc-500 mb-6">Upload required legal documents for your candidacy.</p>
                     <div className="space-y-3">
@@ -351,7 +409,72 @@ const CandidateProfile = () => {
                         ))}
 
                     </div>
+                </section> */}
+
+                <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
+                    <h2 className="text-lg font-bold mb-4">Assets Declaration</h2>
+                    
+                    <InputField
+                        label="Total Assets"
+                        value={`₹${totalAssets.toLocaleString("en-IN")}`}
+                        disabled
+                    />
+
+                    <InputField
+                        label="Movable Assets"
+                        value={assetBreakdown.movable}
+                        onChange={(e) =>
+                            setAssetBreakdown({ ...assetBreakdown, movable: e.target.value })
+                        }
+                    />
+
+                    <InputField
+                        label="Immovable Assets"
+                        value={assetBreakdown.immovable}
+                        onChange={(e) =>
+                            setAssetBreakdown({ ...assetBreakdown, immovable: e.target.value })
+                        }
+                    />
+
+                    <InputField
+                        label="Other Assets"
+                        value={assetBreakdown.other}
+                        onChange={(e) =>
+                            setAssetBreakdown({ ...assetBreakdown, other: e.target.value })
+                        }
+                    />
                 </section>
+
+                <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
+                    <h2 className="text-lg font-bold text-zinc-900 mb-2">
+                        Criminal Case Declaration
+                    </h2>
+                    <p className="text-xs text-zinc-500 mb-6">
+                        Upload required legal documents for your candidacy.
+                    </p>
+
+                    {/* Toggle */}
+                    <div className="flex items-center gap-2 mb-6">
+                        <input
+                            type="checkbox"
+                            id="hasCriminalCase"
+                            checked={hasCriminalCase}
+                            onChange={handleCriminalCaseToggle}
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                        />
+                        <label htmlFor="hasCriminalCase" className="text-sm text-zinc-700">
+                            I have criminal cases
+                        </label>
+                    </div>
+
+                    {hasCriminalCase && (
+                        <CriminalCase
+                            criminalCases={criminalCases}
+                            setCriminalCases={setCriminalCases}
+                        />
+                    )}
+                </section>
+
 
                 {/* Save Button */}
                 <div className="w-full pt-4 pb-12">
