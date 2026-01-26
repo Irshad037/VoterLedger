@@ -3,6 +3,7 @@ import cors from 'cors'
 import 'dotenv/config'
 import cookieParser from 'cookie-parser';
 import connectMongoDB from './src/config/mongodb.js';
+import authRoutes from './src/routes/auth.route.js';
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.get('/', (req, res) => {
     res.send("api is working")
 
 })
+
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 3000;
 
