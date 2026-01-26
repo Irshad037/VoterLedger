@@ -27,6 +27,25 @@ const Monitoring = () => {
         { id: 5, name: "Road Development Project", representative: "Lakshmi Nair", location: "Bangalore South, Karnataka", budget: "₹5.00Cr", tx: "0xcand-6-1..." },
     ];
 
+    const filteredData = projects.filter((proj) => {
+        const search = searchTerm.toLowerCase();
+
+        // Search by name, representative, or location
+        const matchesSearch =
+            proj.name.toLowerCase().includes(search) ||
+            proj.representative.toLowerCase().includes(search) ||
+            proj.location.toLowerCase().includes(search);
+
+        // Extract state from location (after comma)
+        const state = proj.location.split(", ").pop();
+
+        const matchesState =
+            selectedState === "All States" || state === selectedState;
+
+        return matchesSearch && matchesState;
+    });
+
+
     return (
         <div className="min-h-screen bg-zinc-50/50 p-6 md:p-10 font-sans">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -34,7 +53,7 @@ const Monitoring = () => {
                 {/* Navigation & Header */}
                 <div className="space-y-4">
                     <button
-                        onClick={()=>navigate('/')}
+                        onClick={() => navigate('/')}
                         className="flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-blue-600 transition-colors cursor-pointer" >
                         <ArrowLeft size={16} /> Back to Home
                     </button>
@@ -126,7 +145,7 @@ const Monitoring = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-50">
-                                {projects.map((proj) => (
+                                {filteredData.map((proj) => (
                                     <tr key={proj.id} className="group hover:bg-blue-50/30 transition-all duration-200  border-b border-zinc-200">
                                         <td className="px-8 py-3">
                                             <div className="flex items-center gap-3">

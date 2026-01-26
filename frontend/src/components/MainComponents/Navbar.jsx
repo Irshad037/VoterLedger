@@ -8,10 +8,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const { user } = useAuth()
 
-    const navLinkClass = ({ isActive }) =>
-        `text-sm sm:text-base font-medium transition-colors
-   ${isActive ? "text-blue-600 scale-110" : "text-gray-600"}
-   hover:text-blue-600`;
+    const navLinkClass = ({ isActive }) =>`${isActive ? "text-blue-600 scale-120" : "text-gray-600"}`;
 
 
 
@@ -35,7 +32,7 @@ const Navbar = () => {
                 {/* Right Section */}
                 <div className="flex items-center gap-10 ">
                     {/* Nav Links */}
-                    <div className="hidden md:flex items-center  gap-10 text-sm font-medium">
+                    <div className="hidden md:flex items-center  gap-10 text-sm font-bold transition-all duration-300">
                         <NavLink to="/elections" className={navLinkClass}>Elections</NavLink>
                         <NavLink to="/monitor" className={navLinkClass}>Fund</NavLink>
                         <NavLink to="/about" className={navLinkClass}>About</NavLink>
@@ -49,21 +46,21 @@ const Navbar = () => {
                         !user ? (
                             <button
                                 onClick={() => navigate('/signup')}
-                                className="flex-1 rounded-lg bg-blue-600 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                                className="flex-1 rounded-lg cursor-pointer bg-blue-600 px-8 py-2 text-lg font-semibold text-white hover:bg-blue-700"
                             >
                                 Sign Up
                             </button>
                         ) : user.role === "admin" ? (
                             <button
                                 onClick={() => navigate('/admin')}
-                                className="flex-1 rounded-lg bg-blue-600 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                                className="flex-1 rounded-lg cursor-pointer bg-blue-600 px-8 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                             >
                                 Go To Dashboard
                             </button>
                         ) : (
                             <button
                                 onClick={() => navigate('/candidate')}
-                                className="flex-1 rounded-lg bg-blue-600 px-8 py-1 text-sm font-semibold text-white hover:bg-blue-700"
+                                className="flex-1 rounded-lg cursor-pointer bg-blue-600 px-8 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                             >
                                 Go To Dashboard
                             </button>
