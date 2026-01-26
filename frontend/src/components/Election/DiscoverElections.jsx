@@ -1,239 +1,186 @@
-import React, { useState } from 'react'
-import { MapPin, Search, Filter, Calendar, Clock, MapPinned, } from "lucide-react";
+import React, { useState } from 'react';
+import { 
+  MapPin, Search, Filter, Calendar, Clock, MapPinned, 
+  ChevronRight, AlertCircle, Sparkles, Globe 
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
 const elections = [
-    {
-        id: 1,
-        state: "Maharashtra",
-        city: "Mumbai",
-        type: "State",
-        pollingDate: "March 10, 2026",
-        constituencies: 288,
-        daysLeft: 45,
-        status: "Upcoming",
-
-    },
-    {
-        id: 2,
-        state: "Maharashtra",
-        city: " Navi Mumbai",
-        type: "Local",
-        pollingDate: "March 10, 2026",
-        constituencies: 288,
-        daysLeft: 45,
-        status: "Ongoing",
-
-    },
-    {
-        id: 3,
-        state: "Karnataka",
-        city: "Bangalore",
-        type: "Local",
-        pollingDate: "February 5, 2026",
-        constituencies: 224,
-        daysLeft: 5,
-        status: "Ongoing",
-    },
-    {
-        id: 4,
-        state: "Uttar Pradesh",
-        city: "Lucknow",
-        type: "State",
-        pollingDate: "May 20, 2026",
-        constituencies: 403,
-        daysLeft: 120,
-        status: "Upcoming",
-
-    },
-    {
-        id: 5,
-        state: "Tamil Nadu",
-        city: "Chennai",
-        type: "State",
-        pollingDate: "January 15, 2025",
-        constituencies: 234,
-        daysLeft: 0,
-        status: "Ended",
-    },
-
+    { id: 1, state: "Maharashtra", city: "Mumbai", type: "State", pollingDate: "March 10, 2026", constituencies: 288, daysLeft: 45, status: "Upcoming" },
+    { id: 2, state: "Maharashtra", city: "Navi Mumbai", type: "Local", pollingDate: "March 10, 2026", constituencies: 288, daysLeft: 45, status: "Ongoing" },
+    { id: 3, state: "Karnataka", city: "Bangalore", type: "Local", pollingDate: "February 5, 2026", constituencies: 224, daysLeft: 5, status: "Ongoing" },
+    { id: 4, state: "Uttar Pradesh", city: "Lucknow", type: "State", pollingDate: "May 20, 2026", constituencies: 403, daysLeft: 120, status: "Upcoming" },
+    { id: 5, state: "Tamil Nadu", city: "Chennai", type: "State", pollingDate: "January 15, 2025", constituencies: 234, daysLeft: 0, status: "Ended" },
 ];
 
 const DiscoverElections = () => {
     const [selectedType, setSelectedType] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-
     const navigate = useNavigate();
-
 
     const filteredData = elections.filter((e) => {
         const search = searchTerm.toLowerCase();
-
-        const matchesSearch =
-            e.state.toLowerCase().includes(search) ||
-            e.city.toLowerCase().includes(search);
-
-        const matchesType =
-            selectedType === "all" || e.type === selectedType;
-
+        const matchesSearch = e.state.toLowerCase().includes(search) || e.city.toLowerCase().includes(search);
+        const matchesType = selectedType === "all" || e.type === selectedType;
         return matchesSearch && matchesType;
     });
 
     return (
-        <div className="bg-zinc-50 px-6 py-12">
-            <div className="mx-auto max-w-7xl">
+        <div className="min-h-screen bg-zinc-50/50 pb-20">
+            {/* --- HERO HEADER --- */}
+            <div className="bg-white border-b border-zinc-200 pt-16 pb-12 px-6">
+                <div className="mx-auto max-w-7xl">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest border border-blue-100 mb-4">
+                        <Sparkles size={12} /> Live Election Tracker
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tighter">
+                        Discover <span className="text-blue-600">Elections</span>
+                    </h1>
+                    <p className="mt-3 text-lg text-zinc-500 font-medium max-w-2xl leading-relaxed">
+                        Explore democratic processes across India. Stay informed about candidates, manifestos, and polling schedules in your region.
+                    </p>
 
-                {/* HEADER */}
-                <h1 className="text-4xl font-bold text-zinc-900">
-                    Discover Elections
-                </h1>
-                <p className="mt-2 text-lg text-zinc-600">
-                    Find upcoming and ongoing elections across India
-                </p>
-
-                {/* LOCATION BANNER */}
-                <div className="mt-6 flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-800">
-                    <div className=' flex items-center justify-center  my-auto'>
-                        <MapPin className=" h-5 w-5" />
-                    </div>
-                    <div>
-                        <p className="font-medium text-black">
-                            Location Detected: Mumbai, Maharashtra
-                        </p>
-                        <p className="text-sm text-zinc-500">
-                            Showing elections relevant to your area
-                        </p>
-                    </div>
+                    {/* LOCATION DETECTOR BANNER */}
+                    {/* <div className="mt-8 flex items-center justify-between p-1 bg-zinc-100 rounded-2xl max-w-xl border border-zinc-200">
+                        <div className="flex items-center gap-3 px-4 py-2">
+                            <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-blue-600 border border-zinc-100">
+                                <MapPin size={20} />
+                            </div>
+                            <div>
+                                <p className="text-xs font-black text-zinc-400 uppercase tracking-widest">Current Region</p>
+                                <p className="text-sm font-bold text-zinc-900">Mumbai, Maharashtra</p>
+                            </div>
+                        </div>
+                        <button className="hidden sm:block mr-2 px-4 py-2 bg-white text-zinc-600 text-xs font-bold rounded-xl border border-zinc-200 hover:bg-zinc-50 transition-all shadow-sm">
+                            Change Location
+                        </button>
+                    </div> */}
                 </div>
+            </div>
 
-                {/* SEARCH + FILTER */}
-                <div className="mt-8 flex flex-col gap-4 md:flex-row bg-white py-8 px-5 shadow-sm rounded-md">
-                    <div className="relative w-full">
-                        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <div className="mx-auto max-w-7xl px-6">
+                {/* --- SEARCH & FILTER TOOLBAR --- */}
+                <div className="mt-10 flex flex-col lg:flex-row items-center gap-4">
+                    <div className="relative flex-1 w-full group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-600 transition-colors" size={18} />
                         <input
                             value={searchTerm}
-                            type="text"
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search by state, city, or constituency..."
-                            className="w-full rounded-lg border border-zinc-300 py-3 pl-11 pr-4 text-sm focus:border-blue-600 focus:outline-none"
+                            className="w-full rounded-2xl bg-white border-2 border-zinc-100 py-4 pl-12 pr-4 text-sm font-bold text-zinc-700 shadow-sm focus:border-blue-600 focus:bg-white outline-none transition-all"
                         />
                     </div>
 
-                    <div className="relative w-full ">
-                        <Filter className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                        <select
-                            onChange={(e) => setSelectedType(e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-blue-600 bg-white py-3 pl-11 pr-4 text-sm font-medium focus:outline-none">
-                            <option value="all">All Election Types</option>
-                            <option value="National">National</option>
-                            <option value="State">State Assembly</option>
-                            <option value="Local">Local Body</option>
-                        </select>
+                    <div className="flex bg-white p-1.5 rounded-2xl border-2 border-zinc-100 shadow-sm w-full lg:w-auto overflow-x-auto no-scrollbar">
+                        {['all', 'National', 'State', 'Local'].map((type) => (
+                            <button
+                                key={type}
+                                onClick={() => setSelectedType(type)}
+                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                                    selectedType === type 
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
+                                    : "text-zinc-400 hover:text-zinc-600"
+                                }`}
+                            >
+                                {type === 'all' ? 'All Types' : type}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                {/* ELECTION CARDS */}
-                <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredData.map((election, idx) => (
-                        <div
-                            key={idx}
-
-                            className={`rounded-md border-t-8 ${election.status === 'Ongoing'
-                                ? 'border-green-600'
-                                : election.status === 'Ended'
-                                    ? 'border-zinc-600'
-                                    : 'border-blue-800'
-                                } bg-white p-6 shadow-sm hover:shadow-xl`}
-
-                        >
-                            {/* HEADER */}
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-zinc-900">
-                                        {election.state}
-                                    </h3>
-                                    <p className="text-sm text-zinc-500">{election.city}</p>
-                                </div>
-                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${election.status === 'Ongoing'
-                                    ? 'bg-green-200 text-green-800'
-                                    : election.status === 'Ended'
-                                        ? 'bg-zinc-200 text-zinc-700'
-                                        : 'bg-blue-50 text-primary'
-                                    }`}
-                                >
-
-                                    {election.status}
-                                </div>
-                            </div>
-
-                            {/* DETAILS */}
-                            <div className="mt-5 space-y-3 text-sm text-zinc-600">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <Filter className="w-4 h-4 text-blue-900" />
-                                    </div>
-                                    {election.type}{" "}Election
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <Calendar className="h-4 w-4 text-blue-900" />
-                                    </div>
-                                    Polling: {election.pollingDate}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                                        <MapPinned className="h-4 w-4 text-blue-900" />
-                                    </div>
-                                    {election.constituencies} constituencies
-                                </div>
-                            </div>
-
-                            {/* COUNTDOWN */}
-                            <div className="mt-5 flex items-center justify-center gap-2 rounded-lg bg-zinc-200 py-4 text-blue-700">
-                                <Clock className="h-5 w-5" />
-                                {election.status === "Upcoming" && (
-                                    <>
-                                        <span className="text-xl font-semibold">
-                                            {election.daysLeft}
-                                        </span>
-                                        <span className="text-sm">days to polling</span>
-                                    </>
-                                )}
-
-                                {election.status === "Ongoing" && (
-                                    <span className="text-sm font-semibold text-green-700">
-                                        Polling in progress
-                                    </span>
-                                )}
-
-                                {election.status === "Ended" && (
-                                    <span className="text-sm font-semibold text-zinc-600">
-                                        Election ended
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* CTA */}
-                            <button
-                                onClick={() => navigate(`/elections/${election.id}/candidate`)}
-                                className={`mt-6 w-full rounded-lg ${election.status === 'Ongoing'
-                                    ? 'bg-green-600 hover:bg-green-700'
-                                    : election.status === 'Ended'
-                                        ? 'bg-zinc-700 hover:bg-zinc-800'
-                                        : 'bg-blue-800 hover:bg-blue-900'
-                                    } py-3 text-sm font-semibold text-white transition`}
-                            >
-                                View Details
-                            </button>
+                {/* --- ELECTION CARDS GRID --- */}
+                {filteredData.length > 0 ? (
+                    <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        {filteredData.map((election) => (
+                            <ElectionCard key={election.id} election={election} navigate={navigate} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="mt-20 flex flex-col items-center justify-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-zinc-200">
+                        <div className="w-20 h-20 bg-zinc-50 rounded-3xl flex items-center justify-center text-zinc-300 mb-6">
+                            <AlertCircle size={40} />
                         </div>
-                    ))}
-                </div>
-
+                        <h3 className="text-xl font-black text-zinc-900 uppercase">No Elections Found</h3>
+                        <p className="text-zinc-400 font-medium mt-2">Try adjusting your filters or search keywords.</p>
+                    </div>
+                )}
             </div>
-        </div >
+        </div>
     );
 }
 
+/* --- REFINED SUB-COMPONENT: ELECTION CARD --- */
 
-export default DiscoverElections
+const ElectionCard = ({ election, navigate }) => {
+    const isOngoing = election.status === 'Ongoing';
+    const isUpcoming = election.status === 'Upcoming';
+    const isEnded = election.status === 'Ended';
+
+    return (
+        <div className="group bg-white rounded-[2.5rem] border-2 border-zinc-100 p-8 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            {/* Status Ribbon */}
+            <div className={`absolute top-0 right-0 px-6 py-2 rounded-bl-3xl text-[10px] font-black uppercase tracking-widest border-b border-l ${
+                isOngoing ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                isEnded ? 'bg-zinc-100 text-zinc-500 border-zinc-200' :
+                'bg-blue-50 text-blue-600 border-blue-100'
+            }`}>
+                {election.status}
+            </div>
+
+            <div className="mb-8">
+                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-1">{election.type} Election</p>
+                <h3 className="text-2xl font-black text-zinc-900 group-hover:text-blue-600 transition-colors tracking-tight">
+                    {election.state}
+                </h3>
+                <p className="text-sm font-bold text-zinc-500 flex items-center gap-1.5 mt-1">
+                    <Globe size={14} className="text-zinc-300" /> {election.city} Region
+                </p>
+            </div>
+
+            <div className="space-y-4 mb-8">
+                <DetailRow icon={<Calendar size={16} />} label="Polling Date" value={election.pollingDate} />
+                <DetailRow icon={<MapPinned size={16} />} label="Constituencies" value={`${election.constituencies} Active`} />
+            </div>
+
+            {/* PROGRESS / COUNTDOWN BOX */}
+            <div className={`p-4 rounded-2xl border flex items-center justify-center gap-3 transition-colors ${
+                isOngoing ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
+                isEnded ? 'bg-zinc-50 border-zinc-100 text-zinc-500' :
+                'bg-blue-50 border-blue-100 text-blue-700'
+            }`}>
+                {isUpcoming && (
+                    <>
+                        <Clock size={18} className="animate-pulse" />
+                        <span className="text-xl font-black tracking-tighter">{election.daysLeft}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">Days Remaining</span>
+                    </>
+                )}
+                {isOngoing && <p className="text-xs font-black uppercase tracking-[0.15em]">Polling is Live</p>}
+                {isEnded && <p className="text-xs font-black uppercase tracking-[0.15em]">Official Results Declared</p>}
+            </div>
+
+            <button
+                onClick={() => navigate(`/elections/${election.id}/candidate`)}
+                className={`mt-6 w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] cursor-pointer flex items-center justify-center gap-2 transition-all ${
+                    isOngoing ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200' :
+                    isEnded ? 'bg-zinc-800 hover:bg-black shadow-zinc-200' :
+                    'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
+                } text-white shadow-lg active:scale-95`}
+            >
+                View Analytics <ChevronRight size={14} />
+            </button>
+        </div>
+    );
+};
+
+const DetailRow = ({ icon, label, value }) => (
+    <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-zinc-400">
+            <div className="p-1.5 bg-zinc-50 rounded-lg">{icon}</div>
+            <span className="text-[10px] font-black uppercase tracking-tighter">{label}</span>
+        </div>
+        <span className="text-sm font-black text-zinc-800">{value}</span>
+    </div>
+);
+
+export default DiscoverElections;

@@ -24,6 +24,7 @@ import LoginPage from "../components/Auth/LoginPage";
 import AdminRoute from "../components/Auth/AdminRoute";
 import CandidateRoute from "../components/Auth/CandidateRoute";
 import AuthRedirectRoute from "../components/Auth/AuthRedirectRoute";
+import AboutPage from "../components/MainComponents/AboutPage";
 
 
 export const routes = [
@@ -46,6 +47,10 @@ export const routes = [
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/about",
+    element: <AboutPage />,
   },
   {
     path: "/elections",
