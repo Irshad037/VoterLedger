@@ -7,17 +7,18 @@ import PromiseCard from '../CandidateComponents/PromiseCard';
 
 const Manifesto = () => {
     const [promises, setPromises] = useState([
-        { id: 1, category: "Education", text: "Implement free vocational training programs for youth.", budget: "1.5 Million", timeline: "12 Months", status: "Approved" },
-        { id: 2, category: "Healthcare", text: "Expand access to primary healthcare services in rural areas.", budget: "2.0 Million", timeline: "24 Months", status: "Submitted" },
-        { id: 3, category: "Infrastructure", text: "Upgrade public transportation networks.", budget: "5.0 Million", timeline: "36 Months", status: "Draft" },
-        { id: 4, category: "Environment", text: "Launch a city-wide recycling and waste reduction initiative.", budget: "0.8 Million", timeline: "18 Months", status: "Approved" },
-        { id: 6, category: "Public Safety", text: "Increase community policing presence and programs.", budget: "1.0 Million", timeline: "18 Months", status: "Submitted" },
+        { id: 1, category: "Education", text: "Implement free vocational training programs for youth.", budget: "1.5 Million", timeline: "12 Months", status: "Approved", proofDocument: null },
+        { id: 2, category: "Healthcare", text: "Expand access to primary healthcare services in rural areas.", budget: "2.0 Million", timeline: "24 Months", status: "Submitted", proofDocument: null },
+        { id: 3, category: "Infrastructure", text: "Upgrade public transportation networks.", budget: "5.0 Million", timeline: "36 Months", status: "Draft", proofDocument: null },
+        { id: 4, category: "Environment", text: "Launch a city-wide recycling and waste reduction initiative.", budget: "0.8 Million", timeline: "18 Months", status: "Approved", proofDocument: null },
+        { id: 6, category: "Public Safety", text: "Increase community policing presence and programs.", budget: "1.0 Million", timeline: "18 Months", status: "Submitted", proofDocument: null },
     ]);
     const [newPromise, setNewPromise] = useState({
         category: "Education",
         text: "",
         budget: "",
         timeline: "",
+        proofDocument: null,
     });
     const [editingPromise, setEditingPromise] = useState(null);
 
@@ -36,7 +37,7 @@ const Manifesto = () => {
 
     const handleSavePromise = (status) => {
         // extra safety (button is already disabled, but this is good practice)
-        if (!newPromise.text || !newPromise.budget || !newPromise.timeline) return;
+        if (!newPromise.text || !newPromise.budget || !newPromise.timeline || !newPromise.proofDocument) return;
 
         if (editingPromise) {
             //  UPDATE
@@ -80,6 +81,7 @@ const Manifesto = () => {
             text: "",
             budget: "",
             timeline: "",
+            proofDocument: null
         });
     };
 
@@ -96,7 +98,7 @@ const Manifesto = () => {
                     </div>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 active:scale-95"
+                        className="flex items-center justify-center gap-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-200 active:scale-95"
                     >
                         <Plus size={20} /> Add New Promise
                     </button>
@@ -212,25 +214,46 @@ const Manifesto = () => {
                                     />
                                 </div>
                             </div>
+                            <div>
+                                <label className="text-xs font-bold text-zinc-500 uppercase ml-1">
+                                    Upload Proof Document (PDF / Image)
+                                </label>
+
+                                <input
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    onChange={(e) =>
+                                        setNewPromise({ ...newPromise, proofDocument: e.target.files[0] })
+                                    }
+                                    className="w-full mt-1.5 p-3 cursor-pointer bg-zinc-50 border-2 border-zinc-300 rounded-xl outline-none focus:border-blue-600"
+                                />
+
+                                {newPromise.proofDocument && (
+                                    <p className="text-xs text-green-600 mt-1">
+                                        {newPromise.proofDocument.name} uploaded
+                                    </p>
+                                )}
+                            </div>
+
                         </div>
                         <div className="p-6 bg-zinc-50">
                             {editingPromise ? (
                                 <button
                                     onClick={handleDeletePromise}
-                                    className="w-full mb-3 py-3 font-bold bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all"
+                                    className="w-full mb-3 py-3 cursor-pointer font-bold bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all"
                                 >
                                     Delete Promise
                                 </button>
                             ) : (
                                 <div className='flex gap-3'>
                                     <button onClick={closeModal}
-                                        className="flex-1 py-3 font-bold border-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-colors"
+                                        className="flex-1 py-3 cursor-pointer font-bold border-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         onClick={() => handleSavePromise("Draft")}
-                                        className="flex-1 py-3 font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-lg shadow-blue-200 transition-all"
+                                        className="flex-1 py-3 cursor-pointer font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-lg shadow-blue-200 transition-all"
                                     >
                                         Save as Draft
                                     </button>
@@ -238,7 +261,7 @@ const Manifesto = () => {
                             )}
                             <button
                                 disabled={!newPromise.text || !newPromise.budget || !newPromise.timeline}
-                                className="w-full mt-4 py-3 font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full mt-4 py-3 cursor-pointer font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={() =>
                                     handleSavePromise(
                                         editingPromise ? "Submitted" : "Submitted"

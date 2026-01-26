@@ -7,8 +7,10 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import ConstituencyMap from "../Map/ConstituencyMap";
+import { useAuth } from "../../hooks/auth/useAuth";
 
 const Home = () => {
+    const { user } = useAuth() 
     const navigate = useNavigate();
     const [pinCode, setPinCode] = useState("");
 
@@ -37,13 +39,15 @@ const Home = () => {
                             </p>
 
                             <div className="mt-10 flex flex-wrap gap-4">
-                                <button 
-                                onClick={()=>navigate('/elections')}
-                                className=" flex items-center gap-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-lg active:scale-95">
+                                <button
+                                    onClick={() => navigate('/elections')}
+                                    className=" flex items-center gap-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-lg active:scale-95">
                                     Explore Elections <ArrowRight size={18} />
                                 </button>
-                                <button className="flex items-center gap-2 cursor-pointer bg-white text-zinc-900 border-2 border-zinc-200 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-zinc-50 transition-all active:scale-95">
-                                    Track Promises <TrendingUp size={18} className="text-emerald-500" />
+                                <button
+                                    onClick={() => navigate('/monitor')}
+                                    className="flex items-center gap-2 cursor-pointer bg-white text-zinc-900 border-2 border-zinc-200 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-zinc-50 transition-all active:scale-95">
+                                    Track Fund <TrendingUp size={18} className="text-emerald-500" />
                                 </button>
                             </div>
 
@@ -112,16 +116,7 @@ const Home = () => {
                 </div>
             </section>
 
-            <section 
-            onClick={()=>navigate('/monitor')}
-            className=" w-full "
-            >
-                <div className="mx-auto w-fit flex items-center justify-center gap-2 bg-gradient-to-br from-green-500  to-green-700 text-white rounded-md px-7 py-2 shadow-md cursor-pointer">
-                    <DollarSign size={18}/>
-                    <span className="text-xl font-semibold">View Public Fund Monitoring</span>
 
-                </div>
-            </section>
 
             {/* --- RECENTLY VERIFIED CANDIDATES --- */}
             <section className="py-24 max-w-7xl mx-auto px-6">
@@ -179,7 +174,7 @@ const Home = () => {
                     </h2>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Link to="/signup" className="px-12 py-5 bg-blue-600 text-white font-black rounded-2xl uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-200">
-                            Join as Candidate
+                            {user?"Go to Dashboard":"Join as Candidate"}
                         </Link>
                         <Link to="/elections" className="px-12 py-5 bg-white text-zinc-900 border-2 border-zinc-200 font-black rounded-2xl uppercase tracking-widest hover:bg-zinc-50 transition-all">
                             Explore Elections

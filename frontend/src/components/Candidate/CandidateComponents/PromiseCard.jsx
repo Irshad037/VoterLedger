@@ -1,23 +1,24 @@
 import React from "react";
-import { 
-  Calendar, 
-  CheckCircle2, 
-  Clock, 
-  DollarSign, 
-  Edit2, 
-  Lock 
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  Edit2,
+  FileText,
+  Lock
 } from "lucide-react";
 
 const PromiseCard = ({ promise, onEdit }) => {
   const getStatusStyles = (status) => {
     switch (status) {
-      case "Approved": 
+      case "Approved":
         return "bg-emerald-50 text-emerald-700 border-emerald-100";
-      case "Submitted": 
+      case "Submitted":
         return "bg-blue-50 text-blue-700 border-blue-100";
-      case "Draft": 
+      case "Draft":
         return "bg-amber-50 text-amber-700 border-amber-100";
-      default: 
+      default:
         return "bg-zinc-50 text-zinc-600 border-zinc-200";
     }
   };
@@ -26,23 +27,21 @@ const PromiseCard = ({ promise, onEdit }) => {
   const isLocked = promise.status === "Approved";
 
   return (
-    <div className={`bg-white rounded-[2rem] border border-zinc-200 p-7 shadow-sm transition-all duration-300 relative flex flex-col h-full group ${
-      !isLocked ? "hover:shadow-xl hover:-translate-y-1" : "opacity-95 shadow-none"
-    }`}>
-      
+    <div className={`bg-white rounded-[2rem] border border-zinc-200 p-7 shadow-sm transition-all duration-300 relative flex flex-col h-full group ${!isLocked ? "hover:shadow-xl hover:-translate-y-1" : "opacity-95 shadow-none"
+      }`}>
+
       {/* Top Row: Category and Action */}
       <div className="flex justify-between items-start mb-5">
         <span className="px-4 py-1.5 bg-blue-50 text-blue-600 text-[11px] font-bold rounded-full border border-blue-100 uppercase tracking-wider">
           {promise.category}
         </span>
-        
-        <button 
+
+        <button
           disabled={isLocked}
-          className={`p-2.5 rounded-xl transition-all ${
-            isLocked 
-            ? "text-zinc-400 bg-zinc-100 cursor-not-allowed" 
+          className={`p-2.5 rounded-xl transition-all ${isLocked
+            ? "text-zinc-400 bg-zinc-100 cursor-not-allowed"
             : "text-zinc-400 bg-zinc-50 hover:bg-blue-600 hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200"
-          }`}
+            }`}
           onClick={() => !isLocked && onEdit(promise)}
           title={isLocked ? "Approved promises cannot be edited" : "Edit Promise"}
         >
@@ -76,15 +75,28 @@ const PromiseCard = ({ promise, onEdit }) => {
             </div>
           </div>
         </div>
-        
+
         {/* Status Section */}
         <div className="pt-2 flex items-center justify-between">
           <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border ${getStatusStyles(promise.status)}`}>
-             {promise.status === "Approved" && <CheckCircle2 size={14} />}
-             {promise.status === "Submitted" && <Clock size={14} />}
-             {promise.status}
+            {promise.status === "Approved" && <CheckCircle2 size={14} />}
+            {promise.status === "Submitted" && <Clock size={14} />}
+            {promise.status}
           </span>
-          
+          {promise.proofDocument && (
+            <div className="pt-2">
+              <a
+                href={URL.createObjectURL(promise.proofDocument)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:underline"
+              >
+                <FileText size={15}/> View Proof Document
+              </a>
+            </div>
+          )}
+
+
           {isLocked && (
             <span className="flex items-center gap-1 text-[10px] font-bold text-zinc-400 uppercase italic">
               <Lock size={10} /> Verified Record

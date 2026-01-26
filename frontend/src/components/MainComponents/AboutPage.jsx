@@ -9,8 +9,10 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/auth/useAuth';
 
 const AboutPage = () => {
+  const { user } = useAuth() 
   return (
     <div className="min-h-screen bg-white text-zinc-900 font-sans">
       {/* Hero Section */}
@@ -30,7 +32,7 @@ const AboutPage = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/signup" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-lg shadow-blue-200">
-                Register as Candidate <ArrowRight size={18} />
+                 {user?"Go to Dashboard":"Register as Candidate"} <ArrowRight size={18} />
               </Link>
               <button className="px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest text-zinc-600 border-2 border-zinc-200 hover:bg-zinc-50 transition-all">
                 Learn More
