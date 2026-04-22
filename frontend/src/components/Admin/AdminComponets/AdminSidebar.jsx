@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   GanttChartSquare,
@@ -12,6 +12,7 @@ import { GoLaw } from "react-icons/go";
 import { useAuth } from "../../../hooks/auth/useAuth";
 
 const AdminSidebar = () => {
+  const navigate = useNavigate()
   const { logoutMutation } = useAuth();
   // Enhanced link styling with better padding and transitions
   const linkClass = ({ isActive }) =>
@@ -32,7 +33,7 @@ const AdminSidebar = () => {
     <aside className="flex flex-col h-screen w-72 bg-white border-r border-zinc-200">
       {/* BRAND SECTION */}
       <div className="p-6">
-        <div className="flex items-center gap-3">
+        <div onClick={() => navigate('/')} className="flex items-center gap-3 cursor-pointer">
           <div className="bg-blue-600 p-2 rounded-lg">
             <GoLaw className="text-white" size={20} />
           </div>
@@ -65,10 +66,12 @@ const AdminSidebar = () => {
 
       {/* FOOTER SECTION */}
       <div className="p-4 border-t border-zinc-100 space-y-2">
-        {/* <button className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 rounded-xl transition-all">
+        {/* 
+        <button className="flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 rounded-xl transition-all">
           <Settings size={20} />
           Settings
-        </button> */}
+        </button> 
+        */}
 
         <div className="mt-4 p-3 bg-zinc-50 rounded-2xl flex items-center gap-3 border border-zinc-100">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700">

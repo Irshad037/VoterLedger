@@ -1,10 +1,16 @@
 import express from 'express';
 import cors from 'cors'
 import 'dotenv/config'
+import bcrypt from "bcryptjs";
 import cookieParser from 'cookie-parser';
+
+
 import connectMongoDB from './src/config/mongodb.js';
 import authRoutes from './src/routes/auth.route.js';
-import bcrypt from "bcryptjs";
+import electionRoutes from './src/routes/election.routes.js';
+import candidateRoutes from './src/routes/candidate.route.js';
+import manifestoRoutes from './src/routes/manifesto.route.js';
+import applicationRoutes from './src/routes/electionApplication.route.js';
 
 const app = express();
 
@@ -26,6 +32,11 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes);
+app.use('/api/election', electionRoutes);
+app.use('/api/candidate', candidateRoutes);
+app.use("/api/manifesto", manifestoRoutes);
+app.use("/api/application", applicationRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 

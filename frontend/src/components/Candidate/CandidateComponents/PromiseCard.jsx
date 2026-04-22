@@ -86,7 +86,7 @@ const PromiseCard = ({ promise, onEdit }) => {
           {promise.proofDocument && (
             <div className="pt-2">
               <a
-                href={URL.createObjectURL(promise.proofDocument)}
+                href={promise.proofDocument}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:underline"

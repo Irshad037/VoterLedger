@@ -1,24 +1,48 @@
 import React, { useState } from 'react';
-import { 
-  MapPin, Search, Filter, Calendar, Clock, MapPinned, 
-  ChevronRight, AlertCircle, Sparkles, Globe 
+import {
+    MapPin, Search, Filter, Calendar, Clock, MapPinned,
+    ChevronRight, AlertCircle, Sparkles, Globe
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { UseElection } from '../../hooks/election/UseElection';
 
-const elections = [
-    { id: 1, state: "Maharashtra", city: "Mumbai", type: "State", pollingDate: "March 10, 2026", constituencies: 288, daysLeft: 45, status: "Upcoming" },
-    { id: 2, state: "Maharashtra", city: "Navi Mumbai", type: "Local", pollingDate: "March 10, 2026", constituencies: 288, daysLeft: 45, status: "Ongoing" },
-    { id: 3, state: "Karnataka", city: "Bangalore", type: "Local", pollingDate: "February 5, 2026", constituencies: 224, daysLeft: 5, status: "Ongoing" },
-    { id: 4, state: "Uttar Pradesh", city: "Lucknow", type: "State", pollingDate: "May 20, 2026", constituencies: 403, daysLeft: 120, status: "Upcoming" },
-    { id: 5, state: "Tamil Nadu", city: "Chennai", type: "State", pollingDate: "January 15, 2025", constituencies: 234, daysLeft: 0, status: "Ended" },
-];
+
 
 const DiscoverElections = () => {
+    const { allElections } = UseElection();
+    const {
+        data: elections = [],
+        isLoading,
+        isError,
+    } = allElections;
+
     const [selectedType, setSelectedType] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    
+    const normalizedElections = elections.map((e) => {
+        const polling = new Date(e.pollingDate);
+        const today = new Date();
 
-    const filteredData = elections.filter((e) => {
+        const daysLeft = Math.max(
+            Math.ceil((polling - today) / (1000 * 60 * 60 * 24)),
+            0
+        );
+
+        return {
+            _id: e._id,
+            state: e.state,
+            city: e.city,
+            type: e.level,          // National | State | Local
+            pollingDate: polling.toDateString(),
+            constituencies: e.seats,
+            daysLeft,
+            status: e.status,
+            pincode: e.pincode,
+        };
+    });
+
+    const filteredData = normalizedElections.filter((e) => {
         const search = searchTerm.toLowerCase();
         const matchesSearch = e.state.toLowerCase().includes(search) || e.city.toLowerCase().includes(search);
         const matchesType = selectedType === "all" || e.type === selectedType;
@@ -76,11 +100,10 @@ const DiscoverElections = () => {
                             <button
                                 key={type}
                                 onClick={() => setSelectedType(type)}
-                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                                    selectedType === type 
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
+                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${selectedType === type
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
                                     : "text-zinc-400 hover:text-zinc-600"
-                                }`}
+                                    }`}
                             >
                                 {type === 'all' ? 'All Types' : type}
                             </button>
@@ -92,7 +115,7 @@ const DiscoverElections = () => {
                 {filteredData.length > 0 ? (
                     <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                         {filteredData.map((election) => (
-                            <ElectionCard key={election.id} election={election} navigate={navigate} />
+                            <ElectionCard key={election._id} election={election} navigate={navigate} />
                         ))}
                     </div>
                 ) : (
@@ -119,11 +142,10 @@ const ElectionCard = ({ election, navigate }) => {
     return (
         <div className="group bg-white rounded-[2.5rem] border-2 border-zinc-100 p-8 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
             {/* Status Ribbon */}
-            <div className={`absolute top-0 right-0 px-6 py-2 rounded-bl-3xl text-[10px] font-black uppercase tracking-widest border-b border-l ${
-                isOngoing ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+            <div className={`absolute top-0 right-0 px-6 py-2 rounded-bl-3xl text-[10px] font-black uppercase tracking-widest border-b border-l ${isOngoing ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                 isEnded ? 'bg-zinc-100 text-zinc-500 border-zinc-200' :
-                'bg-blue-50 text-blue-600 border-blue-100'
-            }`}>
+                    'bg-blue-50 text-blue-600 border-blue-100'
+                }`}>
                 {election.status}
             </div>
 
@@ -143,11 +165,10 @@ const ElectionCard = ({ election, navigate }) => {
             </div>
 
             {/* PROGRESS / COUNTDOWN BOX */}
-            <div className={`p-4 rounded-2xl border flex items-center justify-center gap-3 transition-colors ${
-                isOngoing ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
+            <div className={`p-4 rounded-2xl border flex items-center justify-center gap-3 transition-colors ${isOngoing ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
                 isEnded ? 'bg-zinc-50 border-zinc-100 text-zinc-500' :
-                'bg-blue-50 border-blue-100 text-blue-700'
-            }`}>
+                    'bg-blue-50 border-blue-100 text-blue-700'
+                }`}>
                 {isUpcoming && (
                     <>
                         <Clock size={18} className="animate-pulse" />
@@ -160,12 +181,11 @@ const ElectionCard = ({ election, navigate }) => {
             </div>
 
             <button
-                onClick={() => navigate(`/elections/${election.id}/candidate`)}
-                className={`mt-6 w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] cursor-pointer flex items-center justify-center gap-2 transition-all ${
-                    isOngoing ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200' :
+                onClick={() => navigate(`/elections/${election._id}/candidate`)}
+                className={`mt-6 w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] cursor-pointer flex items-center justify-center gap-2 transition-all ${isOngoing ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200' :
                     isEnded ? 'bg-zinc-800 hover:bg-black shadow-zinc-200' :
-                    'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
-                } text-white shadow-lg active:scale-95`}
+                        'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
+                    } text-white shadow-lg active:scale-95`}
             >
                 View Analytics <ChevronRight size={14} />
             </button>

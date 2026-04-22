@@ -1,29 +1,71 @@
 import React, { useState } from 'react';
-import { 
-  MapPin, Search, Filter, Calendar, Clock, MapPinned, 
-  ChevronRight, AlertCircle, Sparkles, Fingerprint, 
-  SendHorizontal, BadgeCheck 
+import {
+    MapPin, Search, Filter, Calendar, Clock, MapPinned,
+    ChevronRight, AlertCircle, Sparkles, Fingerprint,
+    SendHorizontal, BadgeCheck
 } from "lucide-react";
 import ElectionApplyCard from '../CandidateComponents/ElectionApplyCard';
-
-const elections = [
-    { id: 1, state: "Maharashtra", city: "Mumbai", type: "State", pollingDate: "March 10, 2026", constituencies: 288, daysLeft: 45, status: "Upcoming" },
-    { id: 2, state: "Maharashtra", city: "Navi Mumbai", type: "Local", pollingDate: "March 10, 2026", constituencies: 120, daysLeft: 45, status: "Ongoing" },
-    { id: 3, state: "Karnataka", city: "Bangalore", type: "Local", pollingDate: "February 5, 2026", constituencies: 224, daysLeft: 5, status: "Ongoing" },
-    { id: 4, state: "Uttar Pradesh", city: "Lucknow", type: "State", pollingDate: "May 20, 2026", constituencies: 403, daysLeft: 120, status: "Upcoming" },
-    { id: 5, state: "Tamil Nadu", city: "Chennai", type: "State", pollingDate: "January 15, 2025", constituencies: 234, daysLeft: 0, status: "Ended" },
-];
+import { UseElection } from '../../../hooks/election/UseElection';
+import ApplyElectionModal from '../CandidateComponents/ApplyElectionModal';
 
 const AllApplication = () => {
+    const { allElections } = UseElection();
+
+    const {
+        data: elections = [],
+        isLoading,
+        isError,
+    } = allElections;
     const [selectedType, setSelectedType] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedElection, setSelectedElection] = useState(null);
 
-    const filteredData = elections.filter((e) => {
+    const normalizedElections = elections.map((e) => {
+        const polling = new Date(e.pollingDate);
+        const today = new Date();
+
+        const daysLeft = Math.max(
+            Math.ceil((polling - today) / (1000 * 60 * 60 * 24)),
+            0
+        );
+
+        return {
+            _id: e._id,
+            state: e.state,
+            city: e.city,
+            type: e.level,          // National | State | Local
+            pollingDate: polling.toDateString(),
+            constituencies: e.seats,
+            daysLeft,
+            status: e.status,
+            pincode: e.pincode,
+        };
+    });
+
+    const filteredData = normalizedElections.filter((e) => {
         const search = searchTerm.toLowerCase();
         const matchesSearch = e.state.toLowerCase().includes(search) || e.city.toLowerCase().includes(search);
         const matchesType = selectedType === "all" || e.type === selectedType;
         return matchesSearch && matchesType;
     });
+
+    if (isLoading) {
+        return (
+            <p className="text-center mt-20 text-zinc-500">
+                Loading elections...
+            </p>
+        );
+    }
+
+    if (isError) {
+        return (
+            <p className="text-center mt-20 text-red-500">
+                Failed to load elections
+            </p>
+        );
+    }
+
+
 
     return (
         <div className="min-h-screen bg-[#FDFDFE] pb-20">
@@ -42,7 +84,7 @@ const AllApplication = () => {
                                 Select an active election cycle to submit your candidacy. Applications require verified digital affidavits.
                             </p>
                         </div>
-                        
+
                         {/* Status Summary */}
                         <div className="flex gap-4">
                             <div className="bg-zinc-50 p-4 rounded-3xl border border-zinc-100">
@@ -76,11 +118,10 @@ const AllApplication = () => {
                             <button
                                 key={type}
                                 onClick={() => setSelectedType(type)}
-                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                                    selectedType === type 
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
+                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${selectedType === type
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
                                     : "text-zinc-400 hover:text-zinc-600"
-                                }`}
+                                    }`}
                             >
                                 {type === 'all' ? 'All' : type}
                             </button>
@@ -91,8 +132,19 @@ const AllApplication = () => {
                 {/* --- ELECTION CARDS --- */}
                 <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                     {filteredData.map((election) => (
-                        <ElectionApplyCard key={election.id} election={election} />
+                        <ElectionApplyCard
+                            key={election._id}
+                            election={election}
+                            onApplyClick={(e) => setSelectedElection(e)}
+                        />
                     ))}
+                    {selectedElection && (
+                        <ApplyElectionModal
+                            election={selectedElection}
+                            onClose={() => setSelectedElection(null)}
+                        />
+                    )}
+
                 </div>
 
                 {filteredData.length === 0 && (

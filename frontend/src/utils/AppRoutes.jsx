@@ -27,6 +27,8 @@ import AdminRoute from "../components/Auth/AdminRoute";
 import CandidateRoute from "../components/Auth/CandidateRoute";
 import AuthRedirectRoute from "../components/Auth/AuthRedirectRoute";
 import AboutPage from "../components/MainComponents/AboutPage";
+import PerformanceReport from "../components/Election/PerformanceReport";
+import VerificationTerminal from "../components/Election/VerificationTerminal";
 
 
 
@@ -47,9 +49,18 @@ export const routes = [
       </AuthRedirectRoute>
     ),
   },
+  
+  {
+    path: "/elections/:electionId/candidate/:candidateId/history",
+    element: <PerformanceReport/>,
+  },
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/verify",
+    element: <VerificationTerminal />,
   },
   {
     path: "/about",

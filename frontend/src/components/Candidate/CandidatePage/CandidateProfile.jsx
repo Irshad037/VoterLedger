@@ -11,9 +11,9 @@ import {
 
 } from 'lucide-react';
 import ListCard from '../CandidateComponents/ListCard';
-import FileUploadRow from '../CandidateComponents/FileUploadRow';
 import InputField from '../CandidateComponents/InputField';
 import CriminalCase from '../CandidateComponents/criminalCase';
+import { UsecandidateProfile } from '../../../hooks/candidate/UsecandidateProfile';
 
 const CandidateProfile = () => {
     const [profilePhoto, setProfilePhoto] = useState(
@@ -64,7 +64,7 @@ const CandidateProfile = () => {
     //         file: null,
     //     },
     // ]);
-    
+
     const parseAmount = (v) =>
         Number(v.replace(/[₹,]/g, "")) || 0;
 
@@ -86,62 +86,62 @@ const CandidateProfile = () => {
         }
     };
 
-    const handleSave = () => {
+    const { profile } = UsecandidateProfile()
+
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            setProfilePhoto(reader.result); // ✅ base64 string
+        };
+        reader.readAsDataURL(file);
+    };
+
+
+
+    const handlePdfChange = (e, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            setCriminalCases((prev) =>
+                prev.map((c, i) =>
+                    i === index ? { ...c, file: reader.result } : c
+                )
+            );
+        };
+        reader.readAsDataURL(file);
+    };
+
+
+    const handleSave = async () => {
+
 
         const payload = {
-            firstName: profileData.firstName,
-            lastName: profileData.lastName,
-            email: profileData.email,
-            phone: profileData.phone,
-            dob: profileData.dob,
-            party: profileData.party,
-
+            ...profileData,
             profilePhoto,
             assets,
             assetBreakdown,
-
             education: educationList.map(({ degree, institute, duration }) => ({
                 degree,
                 institute,
                 duration,
             })),
-
             experience: experienceList.map(({ role, organization, duration }) => ({
                 role,
                 organization,
                 duration,
             })),
-
-            // affidavits: affidavits.map(({ name, file }) => ({
-            //     name,
-            //     file,
-            // })),
-
             criminalCases,
         };
+        console.log("criminalCases payload:", criminalCases);
+        await profile.mutateAsync(payload);
+    };
 
-        console.log(payload);
-        // 🔹 CLEAR EVERYTHING (simple way)
-        setProfilePhoto("");
-        setProfileData({
-            firstName: "",
-            lastName: "",
-            email: "",
-            phone: "",
-            dob: "",
-            party: "",
-        });
-        setEducationList([]);
-        setExperienceList([]);
-        // setAffidavits(
-        //     affidavits.map((a) => ({ ...a, file: null }))
-        // );
-        setAssets("");
-        setAssetBreakdown({ movable: "₹0", immovable: "₹0", other: "₹0" });
-        setHasCriminalCase(false);
-        setCriminalCases([]);
-
-    }
 
     return (
         <div className="min-h-screen ">
@@ -187,13 +187,8 @@ const CandidateProfile = () => {
                                     type="file"
                                     accept="image/*"
                                     hidden
-                                    onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file) {
-                                            const preview = URL.createObjectURL(file);
-                                            setProfilePhoto(preview);
-                                        }
-                                    }}
+                                    onChange={handleImageChange}
+
                                 />
                             </label>
                             <button className="text-sm font-bold text-zinc-400 hover:text-zinc-600"
@@ -413,7 +408,7 @@ const CandidateProfile = () => {
 
                 <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6">
                     <h2 className="text-lg font-bold mb-4">Assets Declaration</h2>
-                    
+
                     <InputField
                         label="Total Assets"
                         value={`₹${totalAssets.toLocaleString("en-IN")}`}
@@ -454,15 +449,15 @@ const CandidateProfile = () => {
                     </p>
 
                     {/* Toggle */}
-                    <div className="flex items-center gap-2 mb-6">
+                    <div className="flex items-center gap-2 mb-6 ">
                         <input
                             type="checkbox"
                             id="hasCriminalCase"
                             checked={hasCriminalCase}
                             onChange={handleCriminalCaseToggle}
-                            className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 cursor-pointer"
                         />
-                        <label htmlFor="hasCriminalCase" className="text-sm text-zinc-700">
+                        <label htmlFor="hasCriminalCase" className="text-sm text-zinc-700 cursor-pointer">
                             I have criminal cases
                         </label>
                     </div>
@@ -471,6 +466,7 @@ const CandidateProfile = () => {
                         <CriminalCase
                             criminalCases={criminalCases}
                             setCriminalCases={setCriminalCases}
+                            handlePdfChange={handlePdfChange}
                         />
                     )}
                 </section>
@@ -479,11 +475,20 @@ const CandidateProfile = () => {
                 {/* Save Button */}
                 <div className="w-full pt-4 pb-12">
                     <button
+                        type="button"
+                        disabled={profile.isPending}
                         onClick={handleSave}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95">
-                        Save Profile
+                        className={`w-full font-bold py-3 px-10 rounded-xl shadow-lg transition-all active:scale-95
+                                ${profile.isPending
+                                ? "bg-gray-400 cursor-not-allowed shadow-none"
+                                : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200"
+                            }
+                                `}
+                    >
+                        {profile.isPending ? "Saving..." : "Save Profile"}
                     </button>
                 </div>
+
             </div>
         </div>
     );

@@ -98,7 +98,7 @@ const LoginPage = () => {
                         <button
                             type="submit"
                             disabled={loginMutation.isPending}
-                            className="group w-full flex items-center justify-center gap-3 bg-zinc-900 hover:bg-blue-600 text-white px-6 py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all shadow-xl hover:shadow-blue-200 active:scale-[0.98] mt-8"
+                            className="group cursor-pointer w-full flex items-center justify-center gap-3 bg-zinc-900 hover:bg-blue-600 text-white px-6 py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest transition-all shadow-xl hover:shadow-blue-200 active:scale-[0.98] mt-8"
                         >
                             {loginMutation.isPending ? "Sign... "
                                 : "Sign In"}<LogIn size={18} className="group-hover:translate-x-1 transition-transform" />

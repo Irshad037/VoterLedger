@@ -1,27 +1,59 @@
-import React, { useState } from 'react';
-import { 
-  Clock, CheckCircle2, XCircle, Info, ChevronRight, 
-  Search, Filter, LayoutGrid, ListFilter, AlertCircle 
+import React, { useMemo, useState } from 'react';
+import {
+  Clock, CheckCircle2, XCircle, Info, ChevronRight,
+  Search, Filter, LayoutGrid, ListFilter, AlertCircle
 } from 'lucide-react';
+import { UseApplication } from '../../../hooks/candidate/UseApplication';
 
 const ApplicationStatus = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const applications = [
-    { id: 1, electionName: "Municipal Council Election 2024 - Ward 7", appliedDate: "2024-03-15", status: "Approved", remarks: "Documents verified. Proceed to next stage." },
-    { id: 2, electionName: "Regional Assembly Elections - North District", appliedDate: "2024-03-20", status: "Pending", remarks: "Awaiting affidavit verification." },
-    { id: 3, electionName: "State Gubernatorial Race - Primary", appliedDate: "2024-03-22", status: "Rejected", remarks: "Incomplete financial disclosure statement." },
-    { id: 4, electionName: "National Parliament - Constituency 12", appliedDate: "2024-03-25", status: "Approved", remarks: "Candidate profile cleared for public listing." },
-    { id: 5, electionName: "Local School Board Elections - District B", appliedDate: "2024-03-28", status: "Pending", remarks: "Background check initiated." },
-    { id: 6, electionName: "Youth Representative Council - City Central", appliedDate: "2024-04-01", status: "Approved", remarks: "Application accepted. Orientation scheduled." }
-  ];
+  const { myApplications } = UseApplication();
+  const { data, isLoading, isError } = myApplications;
+
+  /* =========================
+     MAP BACKEND → UI DATA
+     ========================= */
+  const applications = useMemo(() => {
+    if (!data) return [];
+
+    return data.map((app) => ({
+      id: app._id,
+      electionName: `${app.election.level} Election - ${app.election.city}, ${app.election.state}`,
+      appliedDate: new Date(app.appliedDate)
+        .toISOString()
+        .split("T")[0],
+      status: app.status,
+      remarks: app.adminRemark || "No remarks yet",
+    }));
+  }, [data]);
 
   const stats = [
-    { label: "Total Applied", count: applications.length, color: "text-zinc-600", bg: "bg-zinc-100" },
-    { label: "Approved", count: applications.filter(a => a.status === "Approved").length, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { label: "Pending", count: applications.filter(a => a.status === "Pending").length, color: "text-blue-600", bg: "bg-blue-50" },
-    { label: "Rejected", count: applications.filter(a => a.status === "Rejected").length, color: "text-rose-600", bg: "bg-rose-50" },
+    {
+      label: "Total Applied",
+      count: applications.length,
+      color: "text-zinc-600",
+      bg: "bg-zinc-100",
+    },
+    {
+      label: "Approved",
+      count: applications.filter((a) => a.status === "Approved").length,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+    },
+    {
+      label: "Pending",
+      count: applications.filter((a) => a.status === "Pending").length,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+    },
+    {
+      label: "Rejected",
+      count: applications.filter((a) => a.status === "Rejected").length,
+      color: "text-rose-600",
+      bg: "bg-rose-50",
+    },
   ];
 
   const filteredApps = applications.filter(app => {
@@ -51,7 +83,7 @@ const ApplicationStatus = () => {
   return (
     <div className="min-h-screen p-6 md:p-10 bg-zinc-50/30">
       <div className="max-w-6xl mx-auto">
-        
+
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
@@ -59,12 +91,12 @@ const ApplicationStatus = () => {
             <p className="text-zinc-500 mt-1">Track your progress and administrative feedback.</p>
           </div>
           <div className="flex gap-3">
-             {stats.map((stat, idx) => (
-               <div key={idx} className={`${stat.bg} px-4 py-2 rounded-2xl border border-white shadow-sm`}>
-                 <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">{stat.label}</p>
-                 <p className={`text-xl font-black ${stat.color}`}>{stat.count}</p>
-               </div>
-             ))}
+            {stats.map((stat, idx) => (
+              <div key={idx} className={`${stat.bg} px-4 py-2 rounded-2xl border border-white shadow-sm`}>
+                <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">{stat.label}</p>
+                <p className={`text-xl font-black ${stat.color}`}>{stat.count}</p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -72,7 +104,7 @@ const ApplicationStatus = () => {
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-            <input 
+            <input
               type="text"
               placeholder="Search by election name..."
               className="w-full pl-12 pr-4 py-3 bg-white border border-zinc-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all shadow-sm"
@@ -85,9 +117,8 @@ const ApplicationStatus = () => {
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={`px-5 py-2 text-sm font-bold rounded-xl transition-all ${
-                  activeFilter === f ? "bg-blue-600 text-white shadow-md" : "text-zinc-500 hover:text-zinc-800"
-                }`}
+                className={`px-5 py-2 text-sm font-bold rounded-xl transition-all ${activeFilter === f ? "bg-blue-600 text-white shadow-md" : "text-zinc-500 hover:text-zinc-800"
+                  }`}
               >
                 {f}
               </button>

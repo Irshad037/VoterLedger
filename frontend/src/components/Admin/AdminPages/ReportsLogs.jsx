@@ -41,6 +41,19 @@ const ReportsLogs = () => {
         }
     };
 
+    const filteredActivity = activityLogs.filter(log =>
+        `${log.time} ${log.actor} ${log.action} ${log.detail}`
+            .toLowerCase()
+            .includes(search)
+    );
+
+    const filteredSecurity = securityLogs.filter(log =>
+        `${log.time} ${log.event} ${log.ip} ${log.result}`
+            .toLowerCase()
+            .includes(search)
+    );
+
+
     return (
         <div className="p-6 space-y-6">
             {/* HEADER */}
@@ -109,7 +122,7 @@ const ReportsLogs = () => {
                         </thead>
                         <tbody className="divide-y divide-zinc-200">
                             {tab === "activity"
-                                ? activityLogs.map((log) => (
+                                ? filteredActivity.map((log) => (
                                     <tr key={log.id} className="hover:bg-zinc-50 transition-colors">
                                         <td className="p-3 text-zinc-500 font-mono text-[12px]">{log.time}</td>
                                         <td className="p-3">
@@ -123,19 +136,25 @@ const ReportsLogs = () => {
                                         <td className="p-3"><StatusBadge status={log.status} /></td>
                                     </tr>
                                 ))
-                                : securityLogs.map((log) => (
+                                : filteredSecurity.map((log) => (
                                     <tr key={log.id} className="hover:bg-zinc-50 transition-colors">
                                         <td className="p-4 text-zinc-500 font-mono text-[12px]">{log.time}</td>
                                         <td className="p-4 font-semibold text-zinc-900">{log.event}</td>
                                         <td className="p-4 font-mono text-zinc-600">{log.ip}</td>
                                         <td className="p-4">
-                                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${log.severity === 'high' ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-zinc-100 text-zinc-600 border-zinc-200'
+                                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${log.severity === 'high'
+                                                    ? 'bg-rose-50 text-rose-600 border-rose-100'
+                                                    : log.severity === 'medium'
+                                                        ? 'bg-amber-50 text-amber-700 border-amber-100'
+                                                        : 'bg-zinc-100 text-zinc-600 border-zinc-200'
                                                 }`}>
                                                 {log.severity}
                                             </span>
                                         </td>
                                         <td className="p-4">
-                                            <span className={`px-2.5 py-1 rounded-md text-xs font-bold border ${log.result === "Success" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-rose-50 text-rose-700 border-rose-100"
+                                            <span className={`px-2.5 py-1 rounded-md text-xs font-bold border ${log.result === "Success"
+                                                    ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                                                    : "bg-rose-50 text-rose-700 border-rose-100"
                                                 }`}>
                                                 {log.result}
                                             </span>
@@ -143,6 +162,7 @@ const ReportsLogs = () => {
                                     </tr>
                                 ))}
                         </tbody>
+
                     </table>
                 </div>
             </div>

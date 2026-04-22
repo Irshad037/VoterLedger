@@ -1,20 +1,24 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CheckCircle, ArrowLeft, DollarSign, User, TriangleAlert, CircleCheckBig, ShieldAlert, TrendingUp, FileText } from "lucide-react";
+import { 
+  CheckCircle, ArrowLeft, DollarSign, User, 
+  TriangleAlert, CircleCheckBig, ShieldAlert, 
+  TrendingUp, FileText, ShieldIcon, Award, ChevronRight 
+} from "lucide-react";
 import img from '../../assets/election/image3.png'
+import toast from "react-hot-toast";
 
 const CandidateInfo = () => {
   const { electionId, candidateId } = useParams();
   const navigate = useNavigate();
 
-  // TEMP mock data (later replace with API)
+  // Candidate Mock Data
   const candidate = {
     name: "Priya Sharma",
     party: "Democratic Alliance",
     age: 45,
     education: "MBA, IIM Ahmedabad",
     assets: "₹0.50 Cr",
-    img: "/candidate.jpg",
     isWinner: true,
     assetBreakdown: {
       movable: "₹0.15 Cr",
@@ -23,228 +27,251 @@ const CandidateInfo = () => {
     },
   };
 
-  const [select, setSelect] = useState("Profile");
+  const [manifestoData, setManifestoData] = useState([
+    {
+      category: "Infrastructure",
+      title: "Build 50km of new roads",
+      description: "Construction of high-quality roads connecting rural areas",
+      progress: 65,
+      isVerifying: false,
+      isVerified: false,
+      txHash: ""
+    },
+    {
+      category: "Healthcare",
+      title: "Establish 10 community health centers",
+      description: "Free healthcare facilities in underserved areas",
+      progress: 40,
+      isVerifying: false,
+      isVerified: false,
+      txHash: ""
+    },
+    {
+      category: "Education",
+      title: "Renovate 100 government schools",
+      description: "Complete infrastructure upgrade with digital classrooms",
+      progress: 80,
+      isVerifying: false,
+      isVerified: false,
+      txHash: ""
+    },
+  ]);
+
+  const [select, setSelect] = useState("Manifesto");
   const isClean = false;
+  const [verifying, setVerifying] = useState(false);
+
+  const handleVerify = (index) => {
+    setManifestoData(prev =>
+      prev.map((item, i) => i === index ? { ...item, isVerifying: true } : item)
+    );
+    setVerifying(true);
+
+    setTimeout(() => {
+      const fakeTxHash = "0x" + Math.random().toString(16).substring(2) + Date.now().toString(16);
+      setManifestoData(prev =>
+        prev.map((item, i) =>
+          i === index ? { ...item, isVerifying: false, isVerified: true, txHash: fakeTxHash } : item
+        )
+      );
+      setVerifying(false);
+      toast.success("Promise verified on Blockchain!");
+    }, 3000);
+  };
 
   return (
-
-    <div className="min-h-screen px-6 py-10">
+    <div className="min-h-screen px-6 py-10 bg-zinc-50/50">
       <div className="mx-auto max-w-6xl">
+        
+        {/* BLOCKCHAIN LOADER */}
+        {verifying && (
+          <div className="fixed inset-0 bg-zinc-900/90 backdrop-blur-md flex flex-col items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+            <h2 className="text-white text-xl font-black uppercase tracking-widest">Mining Block...</h2>
+            <p className="text-blue-400 text-sm font-bold mt-2">Securing promise on the immutable ledger</p>
+          </div>
+        )}
 
-        {/* BACK */}
+        {/* NAVIGATION */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 flex items-center gap-2  text-zinc-600 hover:text-zinc-900 text-sm font-bold cursor-pointer"
+          className="mb-8 flex items-center gap-2 text-zinc-400 hover:text-blue-600 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer group"
         >
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to List
         </button>
 
-        {/* HEADER CARD */}
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-zinc-200 flex gap-6">
-          <div className="h-30 w-30 rounded-2xl bg-blue-100 flex items-center justify-center">
-            <img
-              src={img}
-              alt=""
-              className="h-[110px] w-[110px] rounded-xl object-cover"
-            />
+        {/* PROFILE HEADER CARD */}
+        <div className="rounded-xl bg-white p-8 shadow-sm border border-zinc-300 flex flex-col md:flex-row gap-8 relative overflow-hidden mb-8">
+          <Award size={140} className="absolute -right-10 -bottom-10 text-zinc-50 opacity-10 pointer-events-none" />
+
+          <div className="h-32 w-32 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 border-4 border-white shadow-md overflow-hidden">
+            <img src={img} alt={candidate.name} className="h-full w-full object-cover" />
           </div>
 
-
           <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold">{candidate.name}</h1>
-              {candidate.isWinner && (
-                <span className="flex items-center gap-1 rounded-md bg-green-600 px-3 py-2 text-xs font-semibold text-white">
-                  <CheckCircle size={14} />
-                  Elected Representative
-                </span>
-              )}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-4xl font-black text-zinc-900 tracking-tighter">{candidate.name}</h1>
+                  {candidate.isWinner && (
+                    <span className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-emerald-100">
+                      <CheckCircle size={12} /> Incumbent
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-blue-600 text-sm font-black uppercase tracking-widest">{candidate.party}</p>
+              </div>
+
+              {/* NEW WIN HISTORY BUTTON */}
+              <button
+                onClick={() => navigate(`/elections/${electionId}/candidate/${candidateId}/history`)}
+                className="group flex items-center gap-3 bg-zinc-900 text-white px-6 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.15em] hover:bg-blue-600 transition-all shadow-xl active:scale-95 cursor-pointer"
+              >
+                <Award size={16} className="text-blue-400 group-hover:text-white transition-colors" />
+                View Win History & Audit
+                <ChevronRight size={14} />
+              </button>
             </div>
 
-            <p className="mt-2 text-zinc-600 text-lg font-semibold">{candidate.party}</p>
-
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <InfoBox label="Age" value={`${candidate.age}`} />
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <InfoBox label="Age" value={`${candidate.age} Years`} />
               <InfoBox label="Education" value={candidate.education} />
-              <InfoBox label="Assets" value={candidate.assets} />
+              <InfoBox label="Total Assets" value={candidate.assets} />
             </div>
           </div>
         </div>
 
-        {/* TABS */}
-        <div className="mt-6 flex gap-4 bg-gray-100 py-3 px-2 rounded-md ">
+        {/* TAB NAVIGATION */}
+        <div className="flex p-2 bg-zinc-200/50 rounded-lg mb-8 max-w-md border-2 border-zinc-300">
           <button
             onClick={() => setSelect("Profile")}
-            className={` flex-1 
-              ${select === "Profile" ? "rounded-md shadow-md bg-white py-1 " : " text-zinc-500"}
-             font-bold text-sm  flex items-center justify-center gap-1 cursor-pointer`
-            }
+            className={`flex-1 cursor-pointer flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-wider rounded-lg transition-all ${
+              select === "Profile" ? "bg-white text-blue-600 shadow-sm scale-[1.02]" : "text-zinc-500 hover:text-zinc-700"
+            }`}
           >
-            <User size={15} />Profile
+            <User size={16} /> Profile
           </button>
           <button
             onClick={() => setSelect("Manifesto")}
-            className={`flex-1  
-              ${select === "Manifesto" ? "rounded-md shadow-md bg-white py-1 " : " text-zinc-500"} 
-              font-bold
-              text-sm flex items-center justify-center gap-1 cursor-pointer`}
+            className={`flex-1 cursor-pointer flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-wider rounded-lg transition-all ${
+              select === "Manifesto" ? "bg-white text-blue-600 shadow-sm scale-[1.02]" : "text-zinc-500 hover:text-zinc-700"
+            }`}
           >
-            <FileText size={15} />Manifesto
+            <FileText size={16} /> Manifesto
           </button>
         </div>
 
-        {select === "Profile" ? (<>
-          {/* ASSET DECLARATION */}
-          <div className="mt-6 rounded-xl bg-white p-6 shadow-sm border-2 border-zinc-200">
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-green-700">
-              <DollarSign size={20} /> <span className="text-black">Asset Declaration</span>
-            </h3>
-
-            <div className="rounded-lg bg-green-50 p-4 flex justify-between">
-              <span className="font-medium">Total Declared Assets</span>
-              <span className="font-bold text-green-700 text-2xl">
-                {candidate.assets}
-              </span>
-            </div>
-
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <AssetBox label="Movable Assets" value={candidate.assetBreakdown.movable} />
-              <AssetBox label="Immovable Assets" value={candidate.assetBreakdown.immovable} />
-              <AssetBox label="Other Assets" value={candidate.assetBreakdown.other} />
-            </div>
-          </div>
-          <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-
-            {/* Header */}
-            <div className="mb-4 flex items-center gap-2 text-lg font-semibold text-zinc-900">
-              <ShieldAlert className="h-5 w-5 text-orange-500" />
-              Criminal Case Status
-            </div>
-
-            {/* Status Box */}
-            <div
-              className={`rounded-lg border p-10 text-center ${isClean
-                ? "border-green-200 bg-green-50"
-                : "border-red-200 bg-red-50"
-                }`}
-            >
-              {isClean ? (
-                <>
-                  <CircleCheckBig className="mx-auto h-10 w-10 text-green-600" />
-                  <p className="mt-4 text-3xl font-bold text-zinc-900">0</p>
-                  <p className="mt-1 text-zinc-600">No Criminal Cases</p>
-
-                  <span className="mt-4 inline-block rounded-md bg-green-600 px-4 py-1 text-sm font-semibold text-white">
-                    Clean Record
-                  </span>
-                </>
-              ) : (
-                <>
-                  <TriangleAlert className="mx-auto h-10 w-10 text-red-600" />
-                  <p className="mt-4 text-3xl font-bold text-zinc-900">4</p>
-                  <p className="mt-1 text-zinc-600">Criminal Cases Found</p>
-
-                  <span className="mt-4 inline-block rounded-md bg-red-600 px-4 py-1 text-sm font-semibold text-white">
-                    Legal Concerns
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-        </>) : (<>
-          <div className="mt-6 space-y-6">
-            {manifestoData.map((item, index) => (
-              <div
-                key={index}
-                className="rounded-xl border-2 border-zinc-200 bg-white p-6 shadow-sm"
-              >
-                {/* CATEGORY */}
-                <h3 className="mb-4 flex items-center gap-2 font-semibold text-blue-600">
-                  <TrendingUp size={24} /> <span className="text-black text-lg ">{item.category}</span>
+        {/* CONTENT AREA */}
+        <div className="min-h-100">
+          
+          {select === "Profile" ? (
+            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="rounded-xl bg-white p-8 border border-zinc-200 shadow-sm">
+                <h3 className="mb-6 flex items-center gap-2 text-lg font-black text-zinc-900 uppercase tracking-tight">
+                  <DollarSign size={20} className="text-emerald-600" /> Asset Breakdown
                 </h3>
-
-                {/* PROMISE CARD */}
-                <div className="rounded-lg border-2 border-zinc-200 hover:border-blue-500 p-5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold">
-                        {item.title}
-                      </h4>
-                      <p className="text-sm text-zinc-600">
-                        {item.description}
-                      </p>
-                    </div>
-
-                    <span className="rounded-md bg-green-500 px-3 py-1 text-sm font-bold text-white">
-                      {item.progress}%
-                    </span>
-                  </div>
-
-                  <p className="mt-4 text-sm font-medium text-zinc-600">
-                    Progress
-                  </p>
-
-                  <div className="mt-2 h-2 w-full rounded-full bg-blue-100 overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 transition-all duration-500"
-                      style={{ width: `${item.progress}%` }}
-                    />
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <AssetBox label="Movable Assets" value={candidate.assetBreakdown.movable} />
+                  <AssetBox label="Immovable Assets" value={candidate.assetBreakdown.immovable} />
+                  <AssetBox label="Other Assets" value={candidate.assetBreakdown.other} />
                 </div>
               </div>
-            ))}
-          </div>
-        </>)}
 
-        <button
-        onClick={()=>navigate(`/elections/${electionId}/candidate/${candidateId}/fund`)}
-          className="w-full flex items-center justify-center gap-1 bg-blue-600 py-2 px-30 text-white rounded-md hover:shadow-xl hover:bg-blue-800 cursor-pointer "
-        >
-          <DollarSign size={18} />
-          <span className="text-lg font-bold">View Fund Dashboard</span>
-        </button>
+              <div className="rounded-xl bg-white p-8 border border-zinc-200 shadow-sm">
+                <h3 className="mb-6 flex items-center gap-2 text-lg font-black text-zinc-900 uppercase tracking-tight">
+                  <ShieldAlert size={20} className="text-amber-500" /> Legal Records
+                </h3>
+                <div className={`rounded-3xl border-2 p-10 text-center ${isClean ? "border-emerald-100 bg-emerald-50/50" : "border-rose-100 bg-rose-50/50"}`}>
+                  {isClean ? (
+                    <>
+                      <CircleCheckBig className="mx-auto h-12 w-12 text-emerald-600" />
+                      <p className="mt-4 text-3xl font-black text-zinc-900">0</p>
+                      <p className="text-sm font-bold text-emerald-700 uppercase tracking-widest mt-1">Clean Record</p>
+                    </>
+                  ) : (
+                    <>
+                      <TriangleAlert className="mx-auto h-12 w-12 text-rose-600" />
+                      <p className="mt-4 text-3xl font-black text-zinc-900">04</p>
+                      <p className="text-sm font-bold text-rose-700 uppercase tracking-widest mt-1">Legal Concerns Found</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6 animate-in fade-in duration-500">
+              {manifestoData.map((item, index) => (
+                <div key={index} className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm group hover:border-blue-200 transition-all">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                        <TrendingUp size={20} />
+                      </div>
+                      <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight">{item.category}</h3>
+                    </div>
+                    <span className="text-lg font-black text-emerald-600 italic">{item.progress}%</span>
+                  </div>
 
+                  <div className="mb-8">
+                    <h4 className="font-bold text-zinc-800 text-lg mb-1">{item.title}</h4>
+                    <p className="text-zinc-500 text-sm font-medium leading-relaxed">{item.description}</p>
+                    <div className="mt-6 h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+                      <div className="h-full bg-blue-600 transition-all duration-1000" style={{ width: `${item.progress}%` }} />
+                    </div>
+                  </div>
 
+                  {item.isVerified ? (
+                    <div className="rounded-2xl bg-emerald-50 border border-emerald-100 p-4">
+                      <div className="flex items-center gap-2 text-emerald-700 text-xs font-black uppercase tracking-widest">
+                        <CheckCircle size={14} /> Cryptographically Verified
+                      </div>
+                      <p className="mt-2 text-[10px] font-mono text-zinc-500 break-all bg-white/50 p-2 rounded-lg border border-emerald-100/50">
+                        TX: {item.txHash}
+                      </p>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleVerify(index)}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all cursor-pointer active:scale-95 shadow-lg shadow-zinc-200"
+                    >
+                      <ShieldIcon size={14} /> Verify on Blockchain
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER ACTION */}
+        <div className="mt-12">
+          <button
+            onClick={() => navigate(`/elections/${electionId}/candidate/${candidateId}/fund`)}
+            className="w-full flex items-center justify-center gap-3 bg-blue-600 py-6 text-white rounded-xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 cursor-pointer active:scale-95 group"
+          >
+            <DollarSign size={20} className="group-hover:rotate-12 transition-transform" />
+            <span className="text-sm font-black uppercase tracking-[0.2em]">Open Public Fund Dashboard</span>
+          </button>
+        </div>
 
       </div>
     </div>
   );
 };
 
-export default CandidateInfo;
-
+/* HELPER COMPONENTS */
 const InfoBox = ({ label, value }) => (
-  <div className="rounded-lg bg-blue-50 p-4">
-    <p className="text-sm font-semibold text-zinc-500">{label}</p>
-    <p className="mt-1 text-2xl font-bold text-blue-800">{value}</p>
+  <div className="rounded-2xl bg-zinc-50 p-4 border border-zinc-200 transition-colors hover:bg-blue-50/50">
+    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">{label}</p>
+    <p className="text-sm font-black text-zinc-900">{value}</p>
   </div>
 );
 
 const AssetBox = ({ label, value }) => (
-  <div className="rounded-lg border-2 border-zinc-200 p-4">
-    <p className="text-sm font-semibold text-zinc-500">{label}</p>
-    <p className="mt-1 font-bold text-xl">{value}</p>
+  <div className="rounded-2xl border-2 border-zinc-200 p-5 bg-zinc-50/30">
+    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">{label}</p>
+    <p className="font-black text-xl text-zinc-900">{value}</p>
   </div>
 );
 
-const manifestoData = [
-  {
-    category: "Infrastructure",
-    title: "Build 50km of new roads",
-    description: "Construction of high-quality roads connecting rural areas",
-    progress: 65,
-  },
-  {
-    category: "Healthcare",
-    title: "Establish 10 community health centers",
-    description: "Free healthcare facilities in underserved areas",
-    progress: 40,
-  },
-  {
-    category: "Education",
-    title: "Renovate 100 government schools",
-    description: "Complete infrastructure upgrade with digital classrooms",
-    progress: 80,
-  },
-];
-
+export default CandidateInfo;

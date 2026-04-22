@@ -4,15 +4,18 @@ import {
     Calendar, X, Filter, Search, AlertCircle
 } from 'lucide-react';
 import PromiseCard from '../CandidateComponents/PromiseCard';
+import { UseManifesto } from '../../../hooks/candidate/UseManifesto';
 
 const Manifesto = () => {
-    const [promises, setPromises] = useState([
-        { id: 1, category: "Education", text: "Implement free vocational training programs for youth.", budget: "1.5 Million", timeline: "12 Months", status: "Approved", proofDocument: null },
-        { id: 2, category: "Healthcare", text: "Expand access to primary healthcare services in rural areas.", budget: "2.0 Million", timeline: "24 Months", status: "Submitted", proofDocument: null },
-        { id: 3, category: "Infrastructure", text: "Upgrade public transportation networks.", budget: "5.0 Million", timeline: "36 Months", status: "Draft", proofDocument: null },
-        { id: 4, category: "Environment", text: "Launch a city-wide recycling and waste reduction initiative.", budget: "0.8 Million", timeline: "18 Months", status: "Approved", proofDocument: null },
-        { id: 6, category: "Public Safety", text: "Increase community policing presence and programs.", budget: "1.0 Million", timeline: "18 Months", status: "Submitted", proofDocument: null },
-    ]);
+    const { createManifesto, myManifestos, updateManifesto, deleteManifesto } = UseManifesto();
+
+    const {
+        data: promises = [],
+        isLoading,
+        isError,
+    } = myManifestos;
+
+
     const [newPromise, setNewPromise] = useState({
         category: "Education",
         text: "",
@@ -35,43 +38,30 @@ const Manifesto = () => {
         return matchesFilter && matchesSearch;
     });
 
-    const handleSavePromise = (status) => {
-        // extra safety (button is already disabled, but this is good practice)
-        if (!newPromise.text || !newPromise.budget || !newPromise.timeline || !newPromise.proofDocument) return;
+
+    const handleSavePromise = async (status) => {
+        const payload = { ...newPromise, status };
 
         if (editingPromise) {
-            //  UPDATE
-            setPromises(prev =>
-                prev.map(p =>
-                    p.id === editingPromise.id
-                        ? { ...p, ...newPromise, status }
-                        : p
-                )
-            );
+            await updateManifesto.mutateAsync({
+                id: editingPromise._id,
+                payload,
+            });
         } else {
-            //  CREATE
-            setPromises(prev => [
-                ...prev,
-                {
-                    id: Date.now(),
-                    ...newPromise,
-                    status,
-                }
-            ]);
+            await createManifesto.mutateAsync(payload);
         }
-
-        // close modal
-        closeModal()
-    };
-    const handleDeletePromise = () => {
-        if (!editingPromise) return;
-
-        setPromises(prev =>
-            prev.filter(p => p.id !== editingPromise.id)
-        );
 
         closeModal();
     };
+
+    const handleDeletePromise = async () => {
+        if (!editingPromise) return;
+
+        await deleteManifesto.mutateAsync(editingPromise._id);
+        closeModal();
+    };
+
+
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -85,9 +75,24 @@ const Manifesto = () => {
         });
     };
 
+    const isDisabled =
+        createManifesto.isPending ||
+        !newPromise.text ||
+        !newPromise.budget ||
+        !newPromise.timeline ||
+        (!editingPromise && !newPromise.proofDocument);
+
 
     return (
         <div className="min-h-screen p-6 md:p-10">
+            {isLoading && (
+                <p className="text-center text-zinc-500">Loading manifestos...</p>
+            )}
+
+            {isError && (
+                <p className="text-center text-red-500">Failed to load manifestos</p>
+            )}
+
             <div className="max-w-7xl mx-auto">
 
                 {/* Header Section */}
@@ -138,18 +143,23 @@ const Manifesto = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredPromises.map((promise) => (
                             <PromiseCard
-                                key={promise.id}
+                                key={promise._id}
+
                                 promise={promise}
                                 onEdit={(p) => {
+                                    if (p.status === "Approved") return; // 🔒 BLOCK
+
                                     setEditingPromise(p);
                                     setNewPromise({
                                         category: p.category,
                                         text: p.text,
                                         budget: p.budget,
                                         timeline: p.timeline,
+                                        proofDocument: null,
                                     });
                                     setIsModalOpen(true);
                                 }}
+
 
                             />
                         ))}
@@ -171,7 +181,10 @@ const Manifesto = () => {
                             <h3 className="text-xl font-bold text-zinc-900">
                                 {editingPromise ? "Edit Promise" : "Add New Promise"}
                             </h3>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-full text-zinc-400 transition-colors">
+                            <button
+                                disabled={createManifesto.isPending}
+                                onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-full text-zinc-400 transition-colors"
+                            >
                                 <X size={20} />
                             </button>
                         </div>
@@ -216,21 +229,32 @@ const Manifesto = () => {
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-zinc-500 uppercase ml-1">
-                                    Upload Proof Document (PDF / Image)
+                                    Upload Proof Document (PDF only)
                                 </label>
 
                                 <input
                                     type="file"
-                                    accept=".pdf,image/*"
-                                    onChange={(e) =>
-                                        setNewPromise({ ...newPromise, proofDocument: e.target.files[0] })
-                                    }
+                                    accept="application/pdf,image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (!file) return;
+
+                                        const reader = new FileReader();
+                                        reader.onload = () => {
+                                            setNewPromise(prev => ({
+                                                ...prev,
+                                                proofDocument: reader.result, // base64 only
+                                            }));
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }}
                                     className="w-full mt-1.5 p-3 cursor-pointer bg-zinc-50 border-2 border-zinc-300 rounded-xl outline-none focus:border-blue-600"
                                 />
 
+
                                 {newPromise.proofDocument && (
                                     <p className="text-xs text-green-600 mt-1">
-                                        {newPromise.proofDocument.name} uploaded
+                                        uploaded
                                     </p>
                                 )}
                             </div>
@@ -239,39 +263,57 @@ const Manifesto = () => {
                         <div className="p-6 bg-zinc-50">
                             {editingPromise ? (
                                 <button
+                                    disabled={
+                                        createManifesto.isPending ||deleteManifesto.isPending||
+                                        editingPromise?.status === "Approved"
+                                    }
                                     onClick={handleDeletePromise}
-                                    className="w-full mb-3 py-3 cursor-pointer font-bold bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all"
+
+                                    className="w-full mb-3 py-3 font-bold bg-red-600 text-white rounded-xl
+                                     hover:bg-red-700 transition-all disabled:opacity-50
+                                                            disabled:cursor-not-allowed cursor-pointer"
                                 >
                                     Delete Promise
                                 </button>
                             ) : (
-                                <div className='flex gap-3'>
-                                    <button onClick={closeModal}
-                                        className="flex-1 py-3 cursor-pointer font-bold border-2 bg-red-600 text-white hover:bg-red-700 rounded-xl transition-colors"
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={closeModal}
+                                        disabled={createManifesto.isPending}
+                                        className="flex-1 py-3 font-bold bg-red-600 text-white rounded-xl
+                                         hover:bg-red-700 transition-all disabled:opacity-50
+                                         disabled:cursor-not-allowed cursor-pointer"
                                     >
                                         Cancel
                                     </button>
+
                                     <button
+                                        disabled={isDisabled}
                                         onClick={() => handleSavePromise("Draft")}
-                                        className="flex-1 py-3 cursor-pointer font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-lg shadow-blue-200 transition-all"
+                                        className="flex-1 py-3 font-bold bg-green-600 text-white rounded-xl
+                                         hover:bg-green-700 transition-all disabled:opacity-50
+                                      disabled:cursor-not-allowed cursor-pointer"
                                     >
-                                        Save as Draft
+                                        {createManifesto.isPending ? "Saving..." : "Save as Draft"}
                                     </button>
                                 </div>
                             )}
-                            <button
-                                disabled={!newPromise.text || !newPromise.budget || !newPromise.timeline}
-                                className="w-full mt-4 py-3 cursor-pointer font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                onClick={() =>
-                                    handleSavePromise(
-                                        editingPromise ? "Submitted" : "Submitted"
-                                    )
-                                }
-                            >
-                                {editingPromise ? "Submit Changes" : "Create Promise"}
-                            </button>
 
+                            <button
+                                disabled={isDisabled}
+                                onClick={() => handleSavePromise("Submitted")}
+                                className="w-full mt-4 py-3 font-bold bg-blue-600 text-white rounded-xl
+                                  hover:bg-blue-700 transition-all disabled:opacity-50
+                                  disabled:cursor-not-allowed cursor-pointer"
+                            >
+                                {createManifesto.isPending
+                                    ? "Submitting..."
+                                    : editingPromise
+                                        ? "Submit Changes"
+                                        : "Create Promise"}
+                            </button>
                         </div>
+
                     </div>
                 </div>
             )}
@@ -282,3 +324,5 @@ const Manifesto = () => {
 
 
 export default Manifesto;
+
+

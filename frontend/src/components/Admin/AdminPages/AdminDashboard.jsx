@@ -20,7 +20,7 @@ const AdminDashboard = () => {
         </div>
         <button
           onClick={() => { navigate('/admin/elections') }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-md shadow-blue-200">
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-md shadow-blue-200">
           <Plus size={18} />
           Launch New Election
         </button>

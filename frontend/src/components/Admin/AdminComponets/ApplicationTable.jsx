@@ -23,6 +23,13 @@ const getStatusStyles = (status) => {
 const ApplicationTable = () => {
   const { electionId } = useParams();
   const navigate = useNavigate();
+  const [list, setList] = useState(applications);
+  const [search, setSearch] = useState("");
+  const filteredApplications = list.filter((a) =>
+    `${a.name} ${a.election} ${a.party} ${a.email}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       <div className="bg-white p-5 border-2 border-zinc-300 rounded-md overflow-hidden shadow-md">
@@ -33,13 +40,15 @@ const ApplicationTable = () => {
             <h2 className="text-xl font-bold text-zinc-900">Election Applications</h2>
             <p className="text-sm text-zinc-500 mt-1">Manage and audit candidate registration requests.</p>
           </div>
-         
+
           <div className="relative w-full md:w-64 border-2 border-zinc-300 rounded-xl p-1 focus:ring-2 focus:ring-blue-100 bg-zinc-100">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2  cursor-pointer" size={16} />
             <input
               type="text"
               placeholder="Search candidates..."
               className="w-full pl-10 pr-4 py-2 text-sm bg-transparent focus:outline-none"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>
@@ -57,7 +66,7 @@ const ApplicationTable = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
-              {applications.map((a) => (
+              {filteredApplications.map((a) => (
                 <tr key={a.id} className="group hover:bg-blue-50/30 transition-all duration-200 border-b border-zinc-300 ">
                   <td className="px-6 py-2">
                     <div className="flex items-center gap-3">
