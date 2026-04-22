@@ -14,7 +14,7 @@ const Footer = () => {
                                 <GoLaw size={20} />
                             </div>
                             <span className="text-xl font-semibold text-zinc-900">
-                                VoterLedger
+                                CivicTrust
                             </span>
                         </div>
 

@@ -94,7 +94,7 @@ const ApplicationTable = () => {
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ">
                       <button
-                        onClick={() => navigate(`/elections/${electionId}/candidate/${a.id}`)}
+                        onClick={() => navigate(`/verify`)}
                         title="View" className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-zinc-200 transition-all cursor-pointer">
                         <Eye size={16} />
                       </button>

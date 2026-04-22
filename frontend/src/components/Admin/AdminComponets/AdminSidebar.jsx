@@ -38,7 +38,7 @@ const AdminSidebar = () => {
             <GoLaw className="text-white" size={20} />
           </div>
           <h2 className="text-xl font-bold text-zinc-900 tracking-tight">
-            Voter<span className="text-blue-600">Ledger</span>
+            Civic<span className="text-blue-600">Trust</span>
           </h2>
         </div>
         <p className="text-[11px] uppercase tracking-widest text-zinc-400 font-bold mt-8 mb-4 px-2">

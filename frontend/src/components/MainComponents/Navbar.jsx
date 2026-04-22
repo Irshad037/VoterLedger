@@ -23,8 +23,8 @@ const Navbar = () => {
                         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-white font-bold">
                             <GoLaw size={20} />
                         </div>
-                        <span className="text-lg font-semibold text-blue-600">
-                            VoterLedger
+                        <span className="text-lg font-bold text-blue-600">
+                            CivicTrust
                         </span>
                     </div>
                 </NavLink>
